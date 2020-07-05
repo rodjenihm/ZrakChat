@@ -79,6 +79,7 @@ namespace Web.Controllers
                     new Claim("username", user.Username),
                     new Claim("displayName", user.DisplayName),
                     new Claim("id", user.Id.ToString()),
+                    new Claim(ClaimTypes.Role, user.Role)
                 };
 
                 var token = new JwtSecurityToken(
