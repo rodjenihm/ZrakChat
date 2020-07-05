@@ -59,12 +59,19 @@
     <Folder Include="dbo" />
     <Folder Include="dbo\Tables" />
     <Folder Include="dbo\Stored Procedures" />
+    <Folder Include="dbo\Views" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\Users.sql" />
     <Build Include="dbo\Stored Procedures\uspRegisterUser.sql" />
     <Build Include="dbo\Stored Procedures\uspIsUsernameAvailable.sql" />
     <Build Include="dbo\Stored Procedures\uspGetUserByUsername.sql" />
+    <Build Include="dbo\Tables\Contacts.sql" />
+    <Build Include="dbo\Stored Procedures\uspCreateContact.sql" />
+    <Build Include="dbo\Stored Procedures\uspDeleteContact.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetContactsByUserId.sql" />
+    <Build Include="dbo\Views\vUsers.sql" />
+    <Build Include="dbo\Views\vUserContacts.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Database.publish.xml" />

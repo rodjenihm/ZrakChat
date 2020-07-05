@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Web.Dto;
 using Web.Entities;
 using Web.Helpers;
@@ -29,7 +29,7 @@ namespace Web.Controllers
         {
             this.userService = userService;
             this.passwordHasher = passwordHasher;
-            this.jwtConfig = jwtConfigOptions.Value;
+            jwtConfig = jwtConfigOptions.Value;
         }
 
         [HttpPost("register")]
@@ -53,7 +53,6 @@ namespace Web.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
-
 
         [HttpPost("authenticate")]
         public async Task<IActionResult> Authenticate(UserAuthenticateDto model)
@@ -105,7 +104,6 @@ namespace Web.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
-
     }
 }
 
