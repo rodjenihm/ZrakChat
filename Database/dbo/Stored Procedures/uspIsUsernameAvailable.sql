@@ -1,0 +1,13 @@
+﻿CREATE PROCEDURE [dbo].[uspIsUsernameAvailable]
+	@Username NVARCHAR(30)
+AS
+BEGIN
+	SET NOCOUNT ON
+	
+	SELECT CASE WHEN EXISTS (SELECT TOP 1 [Username] FROM [dbo].[Users] WHERE [Username] = @Username)
+		THEN CAST(0 AS BIT)
+		ELSE CAST(1 AS BIT)
+	END
+
+	SET NOCOUNT OFF
+END
