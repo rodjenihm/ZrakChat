@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Web.Entities;
 
 namespace Web.Services
@@ -8,5 +9,6 @@ namespace Web.Services
         Task<bool> RegisterUserAsync(User user);
         Task<bool> IsUsernameAvailableAsync(string username);
         Task<User> GetUserByUsernameAsync(string username);
+        Task<IEnumerable<VUser>> GetUsersBySearchTermAsync(string term);
     }
 }

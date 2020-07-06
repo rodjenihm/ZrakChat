@@ -17,6 +17,9 @@ import { LoginComponent } from './login/login.component';
 import { ChatComponent } from './chat/chat.component';
 import { NgSpinnerModule } from 'ng-bootstrap-spinner';
 import { ContactsComponent } from './contacts/contacts.component';
+import { SearchService } from './services/search.service';
+import { ContactService } from './services/contact.service';
+import { AddContactComponent } from './add-contact/add-contact.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +29,7 @@ import { ContactsComponent } from './contacts/contacts.component';
     LoginComponent,
     ChatComponent,
     ContactsComponent,
+    AddContactComponent,
   ],
   imports: [
     BrowserModule,
@@ -45,7 +49,9 @@ import { ContactsComponent } from './contacts/contacts.component';
       multi: true
     },
     UserService,
-    NotificationService
+    NotificationService,
+    SearchService,
+    ContactService
   ],
   bootstrap: [AppComponent]
 })

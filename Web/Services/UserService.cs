@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,6 +21,12 @@ namespace Web.Services
         {
             using var connection = new SqlConnection(connectionString.Value);
             return (await connection.QueryAsync<User>("uspGetUserByUsername @Username", new { Username = username })).FirstOrDefault();
+        }
+
+        public async Task<IEnumerable<VUser>> GetUsersBySearchTermAsync(string term)
+        {
+            using var connection = new SqlConnection(connectionString.Value);
+            return await connection.QueryAsync<VUser>("uspUserSearchByTerm @Term", new { Term = $"{term}%" });
         }
 
         public async Task<bool> IsUsernameAvailableAsync(string username)

@@ -22,5 +22,8 @@ BEGIN
 	VALUES
 	(@UserId, @ContactId)
 
+	SELECT [Created], [ContactId] AS Id, [ContactUsername] AS Username, [ContactDisplayName] AS DisplayName
+	FROM [dbo].[vUserContacts] WHERE [UserId] = @UserId AND [ContactId] = @ContactId
+
 	SET NOCOUNT OFF
 END

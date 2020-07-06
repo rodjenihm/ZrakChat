@@ -4,7 +4,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,7 +40,7 @@ namespace Web.Controllers
             try
             {
                 if (!await userService.IsUsernameAvailableAsync(model.Username))
-                    return BadRequest(new { error = $"Username '{model.Username}' is already taken." });
+                    return BadRequest(new { message = $"Username '{model.Username}' is already taken." });
 
                 var user = new User
                 { Username = model.Username.ToLower(), DisplayName = model.DisplayName, PasswordHash = passwordHasher.HashPassword(model.Password) };
@@ -49,7 +51,6 @@ namespace Web.Controllers
             }
             catch (Exception)
             {
-
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -92,12 +93,31 @@ namespace Web.Controllers
 
                 return Ok(new
                 {
+                    user.Created,
                     user.Id,
                     user.Username,
                     user.DisplayName,
                     Token = tokenString
                 });
 
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpGet("searchByTerm")]
+        public async Task<IActionResult> SearchByTerm(string term)
+        {
+            if (string.IsNullOrWhiteSpace(term))
+                return BadRequest(new { message = "Search term is empty string or white space." });
+
+            try
+            {
+                var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id").Value);
+                var vUsers = await userService.GetUsersBySearchTermAsync(term);
+                return Ok(vUsers.Take(10));
             }
             catch (Exception)
             {

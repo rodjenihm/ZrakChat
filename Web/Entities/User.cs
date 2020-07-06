@@ -11,4 +11,12 @@ namespace Web.Entities
         public string Role { get; set; }
         public string PasswordHash { get; set; }
     }
+
+    public class VUser
+    {
+        public DateTime Created { get; set; }
+        public int Id { get; set; }
+        public string Username { get; set; }
+        public string DisplayName { get; set; }
+    }
 }
