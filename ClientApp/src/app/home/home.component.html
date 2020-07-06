@@ -1,0 +1,22 @@
+<div class="welcome">
+  <p>Welcome to ZrakChat</p>
+  <p *ngIf="currentUser; else loggedOut">
+    You are logged in as
+    @{{ currentUser.username }}
+  </p>
+  <ng-template #loggedOut>
+    <p> You are navigating this site as guest. Please, login <a routerLink="/login">here</a>.</p>
+    <p>If you don't have account you can register <a routerLink="/register">here</a> for free.</p>
+  </ng-template>
+
+  <br />
+
+  <p>ZrakChat is online chat app made for studying purposes.</p>
+  <p>
+    It allows users to register, log in, add other users to contact list and chat.
+  </p>
+  <p>It supports both private and group chat.</p>
+  <p>
+    Source Code: <a href="https://github.com/rodjenihm/ZrakChat" target=”_blank”><i class="fab fa-github"></i></a>
+  </p>
+</div>

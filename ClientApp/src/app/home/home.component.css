@@ -1,0 +1,11 @@
+:host {
+  display: flex;
+}
+
+.welcome {
+  margin: auto;
+  text-align: center;
+  font-family: cursive;
+  font-style: italic;
+  color: white;
+}

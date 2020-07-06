@@ -1,0 +1,56 @@
+<ng-spinner class="float-right" size="5" type="border" color="success" *ngIf="inProgress"></ng-spinner>
+
+<form class="form" [formGroup]="registerForm" (ngSubmit)="register(registerForm.value)">
+  <h1>Register</h1>
+
+  <div class="textbox">
+    <i class="fa fa-user" aria-hidden="true"></i>
+    <input class="required-field" type="text" placeholder="Username" formControlName="username" value="">
+
+    <div *ngIf="username.invalid && (username.dirty || username.touched)">
+      <div class="validation-error" *ngIf="username.errors.required">
+        Username is required.
+      </div>
+      <div class="validation-error" *ngIf="username.errors.minlength">
+        Username must be at least 5 characters long.
+      </div>
+      <div class="validation-error" *ngIf="username.errors.maxlength">
+        Username must be less than 30 characters long.
+      </div>
+    </div>
+  </div>
+
+  <div class="textbox">
+    <i class="fa fa-user" aria-hidden="true"></i>
+    <input class="required-field" type="text" placeholder="Display Name" formControlName="displayName" value="">
+
+    <div *ngIf="displayName.invalid && (displayName.dirty || displayName.touched)">
+      <div class="validation-error" *ngIf="displayName.errors.required">
+        Display Name is required.
+      </div>
+      <div class="validation-error" *ngIf="displayName.errors.minlength">
+        Display Name must be at least 5 characters long.
+      </div>
+      <div class="validation-error" *ngIf="displayName.errors.maxlength">
+        Display Name must be less than 30 characters long.
+      </div>
+    </div>
+  </div>
+
+  <div class="textbox">
+    <i class="fa fa-lock" aria-hidden="true"></i>
+    <input type="password" placeholder="Password" formControlName="password" value="">
+
+    <div *ngIf="password.invalid && (password.dirty || password.touched)">
+      <div class="validation-error" *ngIf="password.errors.required">
+        Password is required.
+      </div>
+      <div class="validation-error" *ngIf="password.errors.minlength">
+        Password must be at least 6 characters long.
+      </div>
+    </div>
+  </div>
+
+  <input class="btn btn-success btn-custom" type="submit" [disabled]="registerForm.invalid"
+         value="Register">
+</form>

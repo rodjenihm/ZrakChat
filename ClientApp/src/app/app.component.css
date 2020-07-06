@@ -1,0 +1,13 @@
+.navbar-brand {
+  font-family: cursive;
+}
+
+.nav-link {
+  font-family: cursive;
+}
+
+.selected {
+  background: rgba(128, 128, 128, 0.6);
+  transition: .5s;
+  border-radius: 10px;
+}

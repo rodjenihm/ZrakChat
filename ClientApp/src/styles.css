@@ -1,1 +1,19 @@
 /* You can add global styles to this file, and also import other style files */
+
+@import "https://use.fontawesome.com/releases/v5.5.0/css/all.css";
+
+* {
+  padding: 0;
+  margin: 0;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+html, body {
+  min-height: 100vh;
+}
+
+
+.toast-top-right {
+  margin-top: 85px;
+}

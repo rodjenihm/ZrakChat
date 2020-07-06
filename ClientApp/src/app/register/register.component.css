@@ -1,0 +1,65 @@
+:host {
+  margin: auto;
+}
+
+.form {
+  width: 340px;
+  margin: auto;
+  color: white;
+}
+
+  .form h1 {
+    float: left;
+    font-size: 40px;
+    border-bottom: 6px solid #00bc8c;
+    margin-bottom: 50px;
+    padding: 13px 0;
+  }
+
+.textbox {
+  width: 100%;
+  overflow: hidden;
+  font-size: 20px;
+  padding: 8px 0;
+  margin: 8px 0;
+  border-bottom: 1px solid #00bc8c;
+}
+
+  .textbox i {
+    width: 26px;
+    float: left;
+    text-align: center;
+  }
+
+  .textbox input {
+    border: none;
+    outline: none;
+    background: none;
+    color: white;
+    font-size: 18px;
+    width: 80%;
+    float: left;
+    margin: 0 10px;
+  }
+
+  .textbox textarea {
+    border: none;
+    outline: none;
+    background: none;
+    color: white;
+    font-size: 18px;
+    width: 95%;
+    float: left;
+    margin: 0 10px;
+  }
+
+.btn-custom {
+  width: 100%;
+}
+
+
+.validation-error {
+  color: red;
+  font-size: 14px;
+  padding-left: 36px;
+}
