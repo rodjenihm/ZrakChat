@@ -3,8 +3,11 @@ import { UserService } from '../services/user.service';
 import { NotificationService } from '../services/notification.service';
 import { SearchService } from '../services/search.service';
 import { ContactService } from '../services/contact.service';
-import { AddContactComponent } from '../add-contact/add-contact.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
+import { User } from '../models/user';
+import { Observable, of } from 'rxjs';
+
 
 @Component({
   selector: 'app-contacts',
@@ -12,6 +15,8 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./contacts.component.css']
 })
 export class ContactsComponent implements OnInit {
+  user;
+
   searchTerm = '';
   page = 1;
   pageSize = 5;
@@ -25,6 +30,42 @@ export class ContactsComponent implements OnInit {
     private modalService: NgbModal) { }
 
   ngOnInit() {
+  }
+
+  formatter = (user: User) => user.username;
+
+  search = (text$: Observable<string>) =>
+    text$.pipe(
+      debounceTime(200),
+      distinctUntilChanged(),
+      switchMap(term => {
+        if (term.length > 30)
+          return of([]);
+
+        return this.searchService.getUsersByTerm(term).pipe(
+          catchError(() => of([]))
+        )
+      }),
+      map(userSearch => userSearch
+        .filter(u => u.id !== this.userService.currentUserValue.id)
+        .filter(item1 => !this.contactService.contacts.some(item2 => (item2.id === item1.id && item2.username === item1.username))))
+    )
+
+  addContact() {
+    const idx = this.contactService.contacts.findIndex(c => c.id === this.user.id);
+    if (idx > -1) {
+      this.notificationService.showInfo(`User ${this.user.username} is already in the contact list.`, '');
+      this.user = null;
+      return;
+    }
+
+    this.contactService.create(this.user.id)
+      .subscribe(result => {
+        if (result) {
+          this.notificationService.showSuccess('Contact successfully created.', '');
+          this.user = null;
+        }
+      }, httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error creating contact'))
   }
 
   deleteContact(user) {
@@ -59,7 +100,8 @@ export class ContactsComponent implements OnInit {
     }
   }
 
-  openAddContactModal() {
-    const modalRef = this.modalService.open(AddContactComponent, { scrollable: false, centered: true });
+  openAddContactModal(content) {
+    //const modalRef = this.modalService.open(AddContactComponent, { scrollable: false, centered: true });
+    this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title', scrollable: false, centered: true });
   }
 }

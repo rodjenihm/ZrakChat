@@ -1,8 +1,9 @@
 <form class="form-inline text-light mb-3">
   <div class="form-group-row">
-    <input class="form-control form-control-sm" type="text" name="searchTerm" [(ngModel)]="searchTerm" placeholder="Search contacts..." autocomplete="off" />
+    <input class="form-control form-control-sm" type="text"
+           name="searchTerm" [(ngModel)]="searchTerm" placeholder="Search contacts..." autocomplete="off" />
   </div>
-  <button class="btn btn-sm btn-success ml-auto" (click)="openAddContactModal()">Add contact</button>
+  <button class="btn btn-sm btn-success ml-auto" (click)="openAddContactModal(content)">Add contact</button>
 </form>
 
 <table class="table table-striped table-hover text-light">
@@ -34,3 +35,28 @@
     <option [ngValue]="20">20 contacts per page</option>
   </select>
 </div>
+
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Add new contact</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="form-inline">
+      <div class="form-group-row">
+        <input class="form-control form-control-sm" id="searchResult" type="text" placeholder="Search users..."
+               [(ngModel)]="user" [ngbTypeahead]="search" [inputFormatter]="formatter"
+               [resultFormatter]="formatter"
+               [editable]='false' />
+      </div>
+      <button class="btn btn-sm btn-success ml-auto" (click)="addContact()" [disabled]="!user">
+        <i class="fa fa-plus" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="modal.close()">Close</button>
+  </div>
+</ng-template>
