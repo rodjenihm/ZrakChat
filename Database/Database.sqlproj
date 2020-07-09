@@ -72,6 +72,14 @@
     <Build Include="dbo\Stored Procedures\uspGetContactsByUserId.sql" />
     <Build Include="dbo\Views\vUsers.sql" />
     <Build Include="dbo\Views\vUserContacts.sql" />
+    <Build Include="dbo\Tables\Rooms.sql" />
+    <Build Include="dbo\Tables\Messages.sql" />
+    <Build Include="dbo\Stored Procedures\uspUserSearchByTerm.sql" />
+    <Build Include="dbo\Tables\UserRooms.sql" />
+    <Build Include="dbo\Stored Procedures\uspCreatePrivateRoom.sql" />
+    <Build Include="dbo\Views\vUserRooms.sql" />
+    <Build Include="dbo\Views\vActiveUserRooms.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetActiveRoomsByUserId.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Database.publish.xml" />

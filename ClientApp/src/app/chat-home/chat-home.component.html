@@ -1,0 +1,19 @@
+<div class="row">
+  <div class="col-4 border-right">
+    <div class="text-center">
+      <ng-spinner class="mt-3" size="5" type="border" color="" *ngIf="!roomService.dataLoaded"></ng-spinner>
+    </div>
+    <div class="room" *ngFor="let room of roomService.rooms">
+      <p class="text-info">@{{ room.displayName }}</p>
+      <p class="text-muted font-italic">You: EE gde...</p>
+    </div>
+  </div>
+  <div class="col-8 border-bottom">
+    <form class="input-group">
+      <input name="Text" class="form-control type_msg" autocomplete="off" />
+      <div class="input-group-append">
+        <input type="submit" value="Send" class="input-group-text send_btn" />
+      </div>
+    </form>
+  </div>
+</div>

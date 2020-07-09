@@ -31,6 +31,7 @@ namespace Web
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IContactService, ContactService>();
+            services.AddScoped<IRoomService, RoomService>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
 
             var appSettings = jwtConfigSection.Get<JwtConfig>();

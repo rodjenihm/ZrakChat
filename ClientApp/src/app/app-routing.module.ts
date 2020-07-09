@@ -6,6 +6,7 @@ import { RegisterComponent } from './register/register.component';
 import { ChatComponent } from './chat/chat.component';
 import { AuthGuard } from './services/auth.guard'
 import { ContactsComponent } from './contacts/contacts.component';
+import { ChatHomeComponent } from './chat-home/chat-home.component';
 
 
 const routes: Routes = [
@@ -15,7 +16,9 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   {
     path: 'chat', component: ChatComponent, canActivate: [AuthGuard], children: [
-      { path: 'contacts', component: ContactsComponent }
+      { path: '', component: ChatHomeComponent },
+      { path: 'home', component: ChatHomeComponent },
+      { path: 'contacts', component: ContactsComponent },
     ]
   },
 

@@ -10,9 +10,8 @@
 }
 
 html, body {
-  min-height: 100vh;
+  height: 100%;
 }
-
 
 .toast-top-right {
   margin-top: 75px;

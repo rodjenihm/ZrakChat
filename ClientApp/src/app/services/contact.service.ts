@@ -4,6 +4,7 @@ import { UserService } from './user.service';
 import { environment } from '../../environments/environment';
 import { map } from 'rxjs/operators';
 import { UserContact } from '../models/user.contact';
+import { NotificationService } from './notification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,11 +12,20 @@ import { UserContact } from '../models/user.contact';
 export class ContactService {
   contacts: UserContact[] = [];
 
+  dataLoaded = false;
+
   constructor(
     private http: HttpClient,
-    private userService: UserService) {
+    private userService: UserService,
+    private notificationService: NotificationService) {
     this.get()
-      .subscribe(contacts => this.contacts = contacts);
+      .subscribe(contacts => {
+        this.contacts = contacts;
+        this.dataLoaded = true;
+      }, httoErrorResponse => {
+        this.dataLoaded = true;
+        this.notificationService.showError(httoErrorResponse.error.message, 'Error loading contacts');
+      });
   }
 
   create(contactId) {

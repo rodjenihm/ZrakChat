@@ -19,6 +19,8 @@ import { NgSpinnerModule } from 'ng-bootstrap-spinner';
 import { ContactsComponent } from './contacts/contacts.component';
 import { SearchService } from './services/search.service';
 import { ContactService } from './services/contact.service';
+import { ChatHomeComponent } from './chat-home/chat-home.component';
+import { RoomService } from './services/room.service';
 
 @NgModule({
   declarations: [
@@ -28,6 +30,7 @@ import { ContactService } from './services/contact.service';
     LoginComponent,
     ChatComponent,
     ContactsComponent,
+    ChatHomeComponent,
   ],
   imports: [
     BrowserModule,
@@ -49,7 +52,8 @@ import { ContactService } from './services/contact.service';
     UserService,
     NotificationService,
     SearchService,
-    ContactService
+    ContactService,
+    RoomService
   ],
   bootstrap: [AppComponent]
 })
