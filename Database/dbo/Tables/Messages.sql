@@ -4,7 +4,8 @@
 	[Id] INT NOT NULL IDENTITY, 
 	[UserId] INT NOT NULL, 
 	[RoomId] INT NOT NULL,
+	[Text] NVARCHAR(255) NOT NULL,
 	CONSTRAINT [PK_Messages] PRIMARY KEY ([Id]), 
-	CONSTRAINT [FK_Messages_Users] FOREIGN KEY ([UserId]) REFERENCES [Users]([Id]),
-	CONSTRAINT [FK_Messages_Rooms] FOREIGN KEY ([RoomId]) REFERENCES [Rooms]([Id]),
+	CONSTRAINT [FK_Messages_Users] FOREIGN KEY ([UserId]) REFERENCES [Users]([Id]) ON DELETE CASCADE,
+	CONSTRAINT [FK_Messages_Rooms] FOREIGN KEY ([RoomId]) REFERENCES [Rooms]([Id]) ON DELETE CASCADE,
 )

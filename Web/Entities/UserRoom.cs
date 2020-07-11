@@ -7,6 +7,6 @@ namespace Web.Entities
         public DateTime Created { get; set; }
         public int Id { get; set; }
         public string DisplayName { get; set; }
-        public bool Active { get; set; }
+        public MessageInfo LastMessage { get; set; }
     }
 }

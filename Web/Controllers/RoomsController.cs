@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+using Web.Entities;
 using Web.Services;
 
 namespace Web.Controllers
@@ -55,7 +56,12 @@ namespace Web.Controllers
                 if (model.CreatorId != claimId)
                     return StatusCode(StatusCodes.Status401Unauthorized);
 
-                var userRoom = await roomService.CreatePrivateRoomForUsersAsync(model.CreatorId, model.ObjectId);
+                UserRoom userRoom;
+
+                userRoom = await roomService.GetPrivateRoomForUsersAsync(model.CreatorId, model.ObjectId);
+                if (userRoom == null)
+                    userRoom = await roomService.CreatePrivateRoomForUsersAsync(model.CreatorId, model.ObjectId);
+
                 return Ok(userRoom);
             }
             catch (SqlException e)

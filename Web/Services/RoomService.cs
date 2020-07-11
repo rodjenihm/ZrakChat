@@ -9,11 +9,6 @@ using Web.Helpers;
 
 namespace Web.Services
 {
-    public interface IRoomService
-    {
-        Task<UserRoom> CreatePrivateRoomForUsersAsync(int id1, int id2);
-        Task<IEnumerable<UserRoom>> GetActiveRoomsByUserIdAsync(int userId);
-    }
 
     public class RoomService : IRoomService
     {
@@ -36,9 +31,25 @@ namespace Web.Services
         public async Task<IEnumerable<UserRoom>> GetActiveRoomsByUserIdAsync(int userId)
         {
             using var connection = new SqlConnection(connectionString.Value);
-            var userRooms = await connection.QueryAsync<UserRoom>
-                ("uspGetActiveRoomsByUserId @UserId", new { UserId = userId });
+            var userRooms = await connection.QueryAsync
+                (
+                "uspGetActiveRoomsByUserId @UserId",
+                (Func<UserRoom, MessageInfo, UserRoom>)((ur, mi) =>
+                {
+                    ur.LastMessage = mi;
+                    return ur;
+                }),
+                new { UserId = userId }, splitOn: "Sent");
             return userRooms;
+        }
+
+        public async Task<UserRoom> GetPrivateRoomForUsersAsync(int id1, int id2)
+        {
+            using var connection = new SqlConnection(connectionString.Value);
+            var userRoom = (await connection.QueryAsync<UserRoom>
+                ("uspGetPrivateRoom @UserId1, @UserId2", new { UserId1 = id1, UserId2 = id2 }))
+                .FirstOrDefault();
+            return userRoom;
         }
     }
 }
