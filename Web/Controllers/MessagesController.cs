@@ -23,6 +23,36 @@ namespace Web.Controllers
             this.messageService = messageService;
         }
 
+        [HttpGet("getByRoomIdForUserId")]
+        public async Task<IActionResult> GetByRoomIdForUserId(int? userId, int? roomId)
+        {
+            if (!userId.HasValue)
+                return BadRequest(new { message = "UserId doesn't belong to an existing user." });
+            if (!roomId.HasValue)
+                return BadRequest(new { message = "RoomId doesn't belong to an existing room." });
+
+            try
+            {
+                var claimId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id").Value);
+                if (userId != claimId)
+                    return StatusCode(StatusCodes.Status401Unauthorized);
+
+                var messages = await messageService.GetMessagesByRoomIdAsync(userId.Value, roomId.Value);
+                return Ok(messages);
+            }
+            catch (SqlException e)
+            {
+                return BadRequest(new { message = e.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+
+
+
         [HttpPost("send")]
         public async Task<IActionResult> Send(MessageSendDto model)
         {
@@ -34,8 +64,17 @@ namespace Web.Controllers
 
                 var message = new Message { UserId = model.UserId, RoomId = model.RoomId, Text = model.Text };
 
-                await messageService.SendMessage(message);
-                return Ok();
+                message = await messageService.SendMessage(message);
+
+                var messageInfo = new MessageInfo
+                {
+                    Sent = message.Created,
+                    Id = message.Id,
+                    Text = message.Text,
+                    Username = User.Identity.Name
+                };
+
+                return Ok(messageInfo);
             }
             catch (SqlException e)
             {

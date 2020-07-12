@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Web.Entities
 {
@@ -8,5 +9,6 @@ namespace Web.Entities
         public int Id { get; set; }
         public string DisplayName { get; set; }
         public MessageInfo LastMessage { get; set; }
+        public IEnumerable<MessageInfo> Messages { get; set; }
     }
 }

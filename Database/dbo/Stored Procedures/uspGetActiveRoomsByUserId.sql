@@ -10,6 +10,7 @@ BEGIN
 			LEFT JOIN [dbo].[Messages] m ON m.Id = r.MessageId
 			LEFT JOIN [dbo].[Users] u ON u.Id = m.UserId
 			WHERE aur.[UserId] = @UserId
+			ORDER BY m.[Created] DESC
 
 	SET NOCOUNT OFF
 END

@@ -82,6 +82,7 @@
     <Build Include="dbo\Stored Procedures\uspGetActiveRoomsByUserId.sql" />
     <Build Include="dbo\Stored Procedures\uspGetPrivateRoom.sql" />
     <Build Include="dbo\Stored Procedures\uspSendMessage.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetMessagesByRoomIdForUserId.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Database.publish.xml" />

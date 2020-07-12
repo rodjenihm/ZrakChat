@@ -33,7 +33,7 @@ export class RoomService {
       .pipe(
         map(body => {
           if (body) {
-            this.rooms.push(body);
+            this.rooms.unshift(body);
             return true;
           }
           return false;

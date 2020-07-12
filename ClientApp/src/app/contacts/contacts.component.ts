@@ -65,7 +65,8 @@ export class ContactsComponent implements OnInit {
           this.notificationService.showSuccess('Contact successfully created.', '');
           this.user = null;
         }
-      }, httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error creating contact'))
+      }, httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error creating contact'));
+      this.modalService.dismissAll();
   }
 
   deleteContact(user) {
@@ -91,8 +92,8 @@ export class ContactsComponent implements OnInit {
     else {
       tableData = tableData
         .filter(contact =>
-          contact.username.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-          contact.displayName.toLowerCase().includes(this.searchTerm.toLowerCase()))
+          contact.username.toLowerCase().startsWith(this.searchTerm.toLowerCase()) ||
+          contact.displayName.toLowerCase().startsWith(this.searchTerm.toLowerCase()))
       this.total = tableData.length;
 
       return tableData
@@ -101,7 +102,6 @@ export class ContactsComponent implements OnInit {
   }
 
   openAddContactModal(content) {
-    //const modalRef = this.modalService.open(AddContactComponent, { scrollable: false, centered: true });
     this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title', scrollable: false, centered: true });
   }
 }
