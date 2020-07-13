@@ -17,7 +17,7 @@ export class SignalRService {
 
   public startConnection = () => {
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl('https://localhost:5001/chathub')
+      .withUrl(environment.hubUrl)
       .build();
 
     return this.hubConnection.start()
