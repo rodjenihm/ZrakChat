@@ -2,7 +2,7 @@
 Simple web-based chat application made for fun and studying purposes  
 It allows users to register, login, add other users to contacts list and chat with them  
 
-Back-End:
+Back-End:  
 -ASP.NET Core 3.1 WebApi  
 -SQL Server DBMS  
 -Dapper micro-ORM  
