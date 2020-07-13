@@ -4,7 +4,7 @@ It allows users to register, login, add other users to contacts list and chat wi
 
 Back-End:
 -ASP.NET Core 3.1 WebApi  
--SQL Server DBMS
+-SQL Server DBMS  
 -Dapper micro-ORM  
 -ASP.NET CORE SignalR (for real time messaging)
 
