@@ -11,5 +11,5 @@ Back-End:
 Front-End:  
 -Angular 9  
 
-
+In the future I will hopefully add more advanced functionalities like voice messages, video chat, file sharing etc...  
 
