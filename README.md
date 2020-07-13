@@ -8,7 +8,7 @@ Back-End:
 -Dapper micro-ORM  
 -ASP.NET CORE SignalR (for real time messaging)
 
-Front-End:
+Front-End:  
 -Angular 9  
 
 
