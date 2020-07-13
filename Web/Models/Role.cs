@@ -1,4 +1,4 @@
-﻿namespace Web.Entities
+﻿namespace Web.Models
 {
     public class Role
     {

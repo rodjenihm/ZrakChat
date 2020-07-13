@@ -37,7 +37,7 @@ BEGIN
 
 			COMMIT TRANSACTION [Tran1]
 
-			SELECT [Created], [Id], [Text] FROM [dbo].[Messages] WHERE [Id] = @messageId
+			SELECT [Created], [Id], [RoomId], [Text] FROM [dbo].[Messages] WHERE [Id] = @messageId
 		END TRY
 		BEGIN CATCH
 			ROLLBACK TRANSACTION [Tran1]

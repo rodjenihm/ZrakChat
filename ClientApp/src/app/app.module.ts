@@ -22,6 +22,7 @@ import { ContactService } from './services/contact.service';
 import { ChatHomeComponent } from './chat-home/chat-home.component';
 import { RoomService } from './services/room.service';
 import { MessageService } from './services/message.service';
+import { SignalRService } from './services/signal-r.service';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,8 @@ import { MessageService } from './services/message.service';
     SearchService,
     ContactService,
     RoomService,
-    MessageService
+    MessageService,
+    SignalRService
   ],
   bootstrap: [AppComponent]
 })

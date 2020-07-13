@@ -22,7 +22,7 @@ BEGIN
 	FROM [dbo].[Messages] m
 	INNER JOIN [dbo].[Users] u ON u.Id = m.UserId
 	WHERE m.[RoomId] = @RoomId
-	ORDER BY m.[Created]
+	ORDER BY m.[Created] DESC
 
 	SET NOCOUNT OFF
 END

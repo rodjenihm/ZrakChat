@@ -18,6 +18,10 @@ export class RoomService {
     private http: HttpClient,
     private userService: UserService,
     private notificationService: NotificationService) {
+    this.refreshRooms();
+  }
+
+  refreshRooms() {
     this.get()
       .subscribe(rooms => {
         this.rooms = rooms;

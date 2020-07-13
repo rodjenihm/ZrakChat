@@ -10,7 +10,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Web.Dto;
-using Web.Entities;
+using Web.Models;
 using Web.Helpers;
 using Web.Services;
 

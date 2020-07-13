@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { RoomService } from '../services/room.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { User } from '../models/user';
@@ -10,6 +10,7 @@ import { NotificationService } from '../services/notification.service';
 import { Message } from '../models/message';
 import { UserRoom } from '../models/user.room';
 import { MessageService } from '../services/message.service';
+import { SignalRService } from '../services/signal-r.service';
 
 @Component({
   selector: 'app-chat-home',
@@ -29,6 +30,7 @@ export class ChatHomeComponent implements OnInit {
     private messageService: MessageService,
     private notificationService: NotificationService,
     public searchService: SearchService,
+    public signalRService: SignalRService,
     private modalService: NgbModal) { }
 
   ngOnInit(): void {
@@ -99,8 +101,9 @@ export class ChatHomeComponent implements OnInit {
   sendMessage() {
     this.messageService.send(this.room.id, this.message)
       .subscribe(message => {
-        this.room.messages.push(message);
+        this.room.messages.unshift(message);
         this.room.lastMessage = message;
+        this.signalRService.notifySendMessage(message);
       }, httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error sending message'));
     this.message = null;
   }

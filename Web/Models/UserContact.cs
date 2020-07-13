@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Web.Entities
+namespace Web.Models
 {
     public class UserContact
     {

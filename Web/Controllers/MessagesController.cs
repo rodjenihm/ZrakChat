@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Web.Dto;
-using Web.Entities;
+using Web.Models;
+using Web.Hubs;
 using Web.Services;
 
 namespace Web.Controllers
@@ -17,10 +19,12 @@ namespace Web.Controllers
     public class MessagesController : ControllerBase
     {
         private readonly IMessageService messageService;
+        private readonly IHubContext<ChatHub> context;
 
-        public MessagesController(IMessageService messageService)
+        public MessagesController(IMessageService messageService, IHubContext<ChatHub> context)
         {
             this.messageService = messageService;
+            this.context = context;
         }
 
         [HttpGet("getByRoomIdForUserId")]
@@ -70,9 +74,12 @@ namespace Web.Controllers
                 {
                     Sent = message.Created,
                     Id = message.Id,
+                    RoomId = message.RoomId,
                     Text = message.Text,
                     Username = User.Identity.Name
                 };
+
+                //await context.Clients.All.SendAsync("updateMessages", messageInfo);
 
                 return Ok(messageInfo);
             }

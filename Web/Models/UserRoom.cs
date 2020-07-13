@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Web.Entities
+namespace Web.Models
 {
     public class UserRoom
     {

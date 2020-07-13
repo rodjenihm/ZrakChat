@@ -5,7 +5,7 @@ using System;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using Web.Entities;
+using Web.Models;
 using Web.Services;
 
 namespace Web.Controllers

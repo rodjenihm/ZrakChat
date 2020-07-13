@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Web.Helpers;
+using Web.Hubs;
 using Web.Services;
 
 namespace Web
@@ -33,6 +34,7 @@ namespace Web
             services.AddScoped<IContactService, ContactService>();
             services.AddScoped<IRoomService, RoomService>();
             services.AddScoped<IMessageService, MessageService>();
+            services.AddScoped<IConnectionService, ConnectionService>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
 
             var appSettings = jwtConfigSection.Get<JwtConfig>();
@@ -67,6 +69,8 @@ namespace Web
                             .AllowCredentials();
             }));
 
+            services.AddSignalR();
+
             services.AddControllers();
         }
 
@@ -91,6 +95,7 @@ namespace Web
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("/chathub");
             });
 
         }

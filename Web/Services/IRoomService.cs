@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Web.Entities;
+using Web.Models;
 
 namespace Web.Services
 {
