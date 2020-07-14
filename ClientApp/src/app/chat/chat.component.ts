@@ -17,18 +17,24 @@ export class ChatComponent implements OnInit {
 
   ngOnInit() {
     this.signalRService.startConnection();
-    //this.connectionId = await this.signalRService.getConnectionId();
-    //this.signalRService.createConnection(this.connectionId).subscribe();
     this.signalRService.addOnSendMessageListener((message) => {
       const idx = this.roomService.rooms.findIndex(r => r.id === message.roomId);
       if (idx == -1)  {
         this.roomService.refreshRooms();
         return;
+      } else {
+        this.roomService.rooms[idx].lastMessage = message;
+        if (this.roomService.rooms[idx].messages)
+          this.roomService.rooms[idx].messages.unshift(message);
       }
-
-      this.roomService.rooms[idx].lastMessage = message;
-      if (this.roomService.rooms[idx].messages)
-        this.roomService.rooms[idx].messages.unshift(message);
+      this.playNotification();
     });
+  }
+
+  playNotification(){
+    let audio = new Audio();
+    audio.src = "../../../assets/notification.mp3";
+    audio.load();
+    audio.play();
   }
 }

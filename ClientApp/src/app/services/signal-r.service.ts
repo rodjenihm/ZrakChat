@@ -20,7 +20,9 @@ export class SignalRService {
       .withUrl(environment.hubUrl)
       .build();
 
-    return this.hubConnection.start()
+    this.hubConnection.start()
+      .then()
+      .catch(error => console.log(error));
   }
 
   public createConnection(connectionId) {
@@ -30,10 +32,7 @@ export class SignalRService {
   public deleteConnection(connectionId) {
     return this.http.post(`${environment.apiUrl}/connections/delete`, { userId: this.userService.currentUserValue.id, connectionId: connectionId }, { observe: 'body' });
   }
-
-  public getConnectionId() {
-    return this.hubConnection.invoke('GetConnectionId');
-  }
+  
   public notifySendMessage(message) {
     this.hubConnection.invoke('SendMessage', message);
   }

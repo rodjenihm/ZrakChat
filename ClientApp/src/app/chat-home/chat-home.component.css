@@ -48,11 +48,19 @@
   max-width: 40%;
   padding: 5px;
   margin: 10px 5px;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 200, 0.2);
   border-radius: 15px;
+}
+
+.message:hover {
+  background: rgba(255, 255, 200, 0.3);
 }
 
 .message-self {
   background: rgba(0, 188, 140, 0.2);
   margin-left: auto;
+}
+
+.message-self:hover {
+  background: rgba(0, 188, 140, 0.3);
 }

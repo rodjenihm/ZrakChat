@@ -16,7 +16,7 @@
       <ng-template #lastMessage>
         <p class="text-muted font-italic" *ngIf="userService.currentUserValue.username === room.lastMessage.username">You: {{ room.lastMessage.text.substring(0, 15) }}...</p>  
         <p class="text-muted font-italic" *ngIf="userService.currentUserValue.username !== room.lastMessage.username">{{ room.lastMessage.username }}: {{ room.lastMessage.text.substring(0, 15) }}...</p>  
-        <p class="text-info font-italic">{{ room.lastMessage.sent | date:'short'}}</p>
+        <p class="text-info font-italic text-sm">{{ room.lastMessage.sent | date:'short'}}</p>
       </ng-template>
     </div>
   </div>
@@ -27,8 +27,10 @@
     <div class="mb-5" *ngIf="room && room.messages" style="overflow-y: auto;">
       <p class="text-muted text-center font-italic" *ngIf="room.messages.length === 0; else showMessages">This conversation is empty</p>
       <ng-template #showMessages>
-        <div class="message" [class.message-self]="message.username === userService.currentUserValue.username" *ngFor="let message of room.messages">
-          <p>{{ message.text }}</p>
+        <div class="message" [class.message-self]="message.username === userService.currentUserValue.username" *ngFor="let message of room.messages" @fadeIn>
+          <p class="font-italic">{{ message.username }}</p>
+          <p class="text-justify">{{ message.text }}</p>
+          <p class="text-muted">{{ message.sent | date:'short' }}</p>
         </div>
       </ng-template>
     </div>

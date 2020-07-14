@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Text;
 using Web.Helpers;
 using Web.Hubs;
@@ -63,7 +64,7 @@ namespace Web
             services.AddCors(options => options.AddPolicy("ApiCorsPolicy", builder =>
             {
                 builder
-                .WithOrigins("http://localhost:4200")
+                .WithOrigins("http://localhost:4200", "http://zrakchat.azurewebsites.net/", "http://zrakchat.azurewebsites.net/")
                     .AllowAnyMethod()
                         .AllowAnyHeader()
                             .AllowCredentials();

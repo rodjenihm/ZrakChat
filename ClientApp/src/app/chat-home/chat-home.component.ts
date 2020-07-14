@@ -7,15 +7,23 @@ import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from '
 import { SearchService } from '../services/search.service';
 import { UserService } from '../services/user.service';
 import { NotificationService } from '../services/notification.service';
-import { Message } from '../models/message';
 import { UserRoom } from '../models/user.room';
 import { MessageService } from '../services/message.service';
 import { SignalRService } from '../services/signal-r.service';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-chat-home',
   templateUrl: './chat-home.component.html',
-  styleUrls: ['./chat-home.component.css']
+  styleUrls: ['./chat-home.component.css'],
+  animations: [
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: '0' }),
+        animate('.5s ease-out', style({ opacity: '1' })),
+      ]),
+    ]),
+  ],
 })
 export class ChatHomeComponent implements OnInit {
   user: User;
@@ -51,12 +59,22 @@ export class ChatHomeComponent implements OnInit {
         )
       }),
       map(userSearch => userSearch
-        .filter(u => u.id !== this.userService.currentUserValue.id))
-        //.filter(item1 => !this.contactService.contacts.some(item2 => (item2.id === item1.id && item2.username === item1.username))))
+        .filter(u => u.id !== this.userService.currentUserValue.id))        
     )
     
   getTableData() {
-    var tableData = this.roomService.rooms;
+    var tableData = this.roomService.rooms.sort((r1, r2)=> {
+      if (!r1.lastMessage && !r2.lastMessage)
+        return 0;
+      
+      if (!r1.lastMessage)
+        return 1;
+
+      if (!r2.lastMessage)
+        return -1;
+      
+      return new Date(r2.lastMessage.sent).getTime() - new  Date(r1.lastMessage.sent).getTime();
+    });
 
     if (!tableData)
       return [];
