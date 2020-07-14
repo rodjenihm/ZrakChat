@@ -76,6 +76,12 @@ namespace Web.Controllers
                     Username = User.Identity.Name
                 };
 
+                var sendTo = (await userService.GetUsersByRoomIdAsync(messageInfo.RoomId))
+                    .Where(u => u != messageInfo.Username)
+                    .ToList();
+
+                Task.Run(() => context.Clients.Users(sendTo).SendAsync("updateMessages", messageInfo));
+
                 return Ok(messageInfo);
             }
             catch (SqlException e)

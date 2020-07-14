@@ -121,7 +121,7 @@ export class ChatHomeComponent implements OnInit {
       .subscribe(message => {
         this.room.messages.unshift(message);
         this.room.lastMessage = message;
-        this.signalRService.notifySendMessage(message);
+        //this.signalRService.notifySendMessage(message);
       }, httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error sending message'));
     this.message = null;
   }
