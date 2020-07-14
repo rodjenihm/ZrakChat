@@ -9,6 +9,7 @@ import { UserService } from './user.service';
 })
 export class SignalRService {
   private hubConnection: signalR.HubConnection;
+  a = 1;
 
   constructor(
     private http: HttpClient,
@@ -16,8 +17,12 @@ export class SignalRService {
      }
 
   public startConnection = () => {
+    const options = { 
+      accessTokenFactory: () => this.userService.currentUserValue.token
+    };
+
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(environment.hubUrl)
+      .withUrl(environment.hubUrl, options)
       .build();
 
     this.hubConnection.start()

@@ -10,5 +10,6 @@ namespace Web.Services
         Task<bool> IsUsernameAvailableAsync(string username);
         Task<User> GetUserByUsernameAsync(string username);
         Task<IEnumerable<VUser>> GetUsersBySearchTermAsync(string term);
+        Task<IEnumerable<string>> GetUsersByRoomIdAsync(int roomId);
     }
 }

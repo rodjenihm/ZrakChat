@@ -54,11 +54,8 @@ namespace Web.Controllers
             }
         }
 
-
-
-
         [HttpPost("send")]
-        public async Task<IActionResult> Send(MessageSendDto model)
+        public async Task<IActionResult> Send([FromServices] IUserService userService, MessageSendDto model)
         {
             try
             {
@@ -78,8 +75,6 @@ namespace Web.Controllers
                     Text = message.Text,
                     Username = User.Identity.Name
                 };
-
-                //await context.Clients.All.SendAsync("updateMessages", messageInfo);
 
                 return Ok(messageInfo);
             }

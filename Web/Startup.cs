@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Text;
+using System.Threading.Tasks;
 using Web.Helpers;
 using Web.Hubs;
 using Web.Services;
@@ -59,6 +61,19 @@ namespace Web
                     ValidAudience = appSettings.Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                 };
+
+                configureOptions.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        if (!string.IsNullOrEmpty(accessToken))
+                        {
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
             services.AddCors(options => options.AddPolicy("ApiCorsPolicy", builder =>
@@ -71,6 +86,7 @@ namespace Web
             }));
 
             services.AddSignalR();
+            services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
 
             services.AddControllers();
         }
@@ -99,6 +115,14 @@ namespace Web
                 endpoints.MapHub<ChatHub>("/chathub");
             });
 
+        }
+    }
+
+    public class NameUserIdProvider : IUserIdProvider
+    {
+        public string GetUserId(HubConnectionContext connection)
+        {
+            return connection.User?.Identity?.Name;
         }
     }
 }

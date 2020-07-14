@@ -23,6 +23,15 @@ namespace Web.Services
             return (await connection.QueryAsync<User>("uspGetUserByUsername @Username", new { Username = username })).FirstOrDefault();
         }
 
+        public async Task<IEnumerable<string>> GetUsersByRoomIdAsync(int roomId)
+        {
+            using var connection = new SqlConnection(connectionString.Value);
+            var usernames = (await connection.QueryAsync<VUser>
+                ("uspGetUsersByRoomId @RoomId", new { RoomId = roomId }))
+                .Select(u => u.Username);
+            return usernames;
+        }
+
         public async Task<IEnumerable<VUser>> GetUsersBySearchTermAsync(string term)
         {
             using var connection = new SqlConnection(connectionString.Value);
