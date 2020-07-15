@@ -7,27 +7,34 @@ import { RoomService } from '../services/room.service';
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css']
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, OnDestroy {
   connectionId;
 
   constructor(
     private roomService: RoomService,
     private signalRService: SignalRService) {
   }
+  ngOnDestroy(): void {
+    this.signalRService.stop();
+  }
 
   ngOnInit() {
     this.signalRService.startConnection();
     this.signalRService.addOnSendMessageListener((message) => {
       const idx = this.roomService.rooms.findIndex(r => r.id === message.roomId);
-      if (idx == -1)  {
+      if (idx === -1)  {
         this.roomService.refreshRooms();
+	      this.playNotification();
         return;
       } else {
-        this.roomService.rooms[idx].lastMessage = message;
-        if (this.roomService.rooms[idx].messages)
-          this.roomService.rooms[idx].messages.unshift(message);
+	      const idj = this.roomService.rooms[idx].messages.findIndex(m => m.id === message.id);
+      	if (idj === -1) {		
+	        this.roomService.rooms[idx].lastMessage = message;
+            if (this.roomService.rooms[idx].messages)
+              this.roomService.rooms[idx].messages.unshift(message);
+	        this.playNotification();
+	      }
       }
-      this.playNotification();
     });
 
     this.signalRService.addOnGoOnlineListener((userId) => {
@@ -35,7 +42,6 @@ export class ChatComponent implements OnInit {
         r.members.forEach(m => {
           if (m.id === userId)
             m.isConnected = true;
-            console.log(userId);
         })
       })
     });
@@ -45,7 +51,6 @@ export class ChatComponent implements OnInit {
         r.members.forEach(m => {
           if (m.id === userId)
             m.isConnected = false;
-            console.log(userId);
         })
       })
     });

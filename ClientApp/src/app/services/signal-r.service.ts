@@ -37,6 +37,10 @@ export class SignalRService {
   public deleteConnection(connectionId) {
     return this.http.post(`${environment.apiUrl}/connections/delete`, { userId: this.userService.currentUserValue.id, connectionId: connectionId }, { observe: 'body' });
   }
+
+  public stop() {
+    this.hubConnection.stop();
+  }
   
   public notifySendMessage(message) {
     this.hubConnection.invoke('SendMessage', message);
