@@ -7,8 +7,8 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Web.Dto;
-using Web.Models;
 using Web.Hubs;
+using Web.Models;
 using Web.Services;
 
 namespace Web.Controllers

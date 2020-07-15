@@ -35,6 +35,10 @@ namespace Web.Controllers
                     return StatusCode(StatusCodes.Status401Unauthorized);
 
                 var userRooms = await roomService.GetActiveRoomsByUserIdAsync(userId.Value);
+
+                foreach (var userRoom in userRooms)
+                    userRoom.Members = await roomService.GetRoomMembersByRoomIdAsync(userRoom.Id);
+
                 return Ok(userRooms);
             }
             catch (SqlException e)

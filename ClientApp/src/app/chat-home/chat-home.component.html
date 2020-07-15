@@ -1,17 +1,20 @@
 <div class="row" style="height: 77.5%; padding: 5px; border-radius: 5px; box-shadow: 0px 0px 25px grey;">
   <div class="col-4 col-lg-3 h-100" style="overflow-y: scroll;">
+    <button class="add_btn text-success mb-3 mt-1" title="New private chat" (click)="openNewPrivateChatModal(content)">+<i class="fa fa-user" aria-hidden="true"></i></button>
     <form class="form-inline text-light mb-3">
       <div class="form-group-row">
         <input class="form-control form-control-sm" type="text"
                name="searchTerm" [(ngModel)]="searchTerm" placeholder="Search rooms..." autocomplete="off" />
       </div>
     </form>
-    <button class="add_btn text-success mb-3" title="New private chat" (click)="openNewPrivateChatModal(content)">+<i class="fa fa-user" aria-hidden="true"></i></button>
     <div class="text-center">
       <ng-spinner class="mt-3" size="5" type="border" color="" *ngIf="!roomService.dataLoaded"></ng-spinner>
     </div>
-    <div class="room" *ngFor="let room of getTableData()" (click)="openRoom(room)">
-      <p class="text-success">{{ room.displayName }}</p>
+    <div class="room" [class.room-selected]="room === selectedRoom" *ngFor="let room of getTableData()" (click)="openRoom(room)">
+      <div style="display: flex; justify-content: space-between;">
+        <p class="text-success">{{ room.displayName }}</p> 
+        <i class="fa fa-circle text-success" aria-hidden="true" *ngIf="isOnline(room)" title="User is online"></i>
+      </div>
       <p class="text-muted font-italic" *ngIf="!room.lastMessage; else lastMessage">No messages</p>
       <ng-template #lastMessage>
         <p class="text-muted font-italic" *ngIf="userService.currentUserValue.username === room.lastMessage.username">You: {{ room.lastMessage.text.substring(0, 15) }}...</p>  
@@ -24,17 +27,17 @@
     <div class="text-center mt-5">
       <ng-spinner size="5" type="border" color="" *ngIf="isLoading"></ng-spinner>
     </div>
-    <div class="mb-5" *ngIf="room && room.messages" style="overflow-y: auto;">
-      <p class="text-muted text-center font-italic" *ngIf="room.messages.length === 0; else showMessages">This conversation is empty</p>
+    <div *ngIf="selectedRoom && selectedRoom.messages" style="overflow-y: auto;">
+      <p class="text-muted text-center font-italic" *ngIf="selectedRoom.messages.length === 0; else showMessages">This conversation is empty</p>
       <ng-template #showMessages>
-        <div class="message" [class.message-self]="message.username === userService.currentUserValue.username" *ngFor="let message of room.messages" @fadeIn>
+        <div class="message" [class.message-self]="message.username === userService.currentUserValue.username" *ngFor="let message of selectedRoom.messages" @fadeIn>
           <p class="font-italic">{{ message.username }}</p>
           <p class="text-justify">{{ message.text }}</p>
           <p class="text-muted">{{ message.sent | date:'short' }}</p>
         </div>
       </ng-template>
     </div>
-    <form class="input-group mt-auto" style="position: sticky; bottom: 0;" *ngIf="room">
+    <form class="input-group mt-auto" style="position: sticky; bottom: 0;" *ngIf="selectedRoom">
       <input name="Text" class="form-control type_msg" autocomplete="off" [(ngModel)]="message" />
       <div class="input-group-append">
         <input type="submit" value="Send" class="input-group-text btn send_btn" [disabled]="!message" (click)="sendMessage()" />

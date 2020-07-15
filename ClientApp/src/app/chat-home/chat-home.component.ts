@@ -28,7 +28,7 @@ import { trigger, transition, style, animate } from '@angular/animations';
 export class ChatHomeComponent implements OnInit {
   user: User;
   searchTerm = '';
-  room: UserRoom;
+  selectedRoom: UserRoom;
   message;
   isLoading = false;
 
@@ -113,17 +113,26 @@ export class ChatHomeComponent implements OnInit {
           this.isLoading = false;
         }, httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error loading messages'));
     }
-    this.room = room;
+    this.selectedRoom = room;
   }
 
   sendMessage() {
-    this.messageService.send(this.room.id, this.message)
+    this.messageService.send(this.selectedRoom.id, this.message)
       .subscribe(message => {
-        this.room.messages.unshift(message);
-        this.room.lastMessage = message;
+        this.selectedRoom.messages.unshift(message);
+        this.selectedRoom.lastMessage = message;
         //this.signalRService.notifySendMessage(message);
       }, httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error sending message'));
     this.message = null;
+  }
+
+  isOnline(room: UserRoom) {
+    if (room.members.length == 2) {
+      const otherGuy = room.members.filter(u => u.id !== this.userService.currentUserValue.id)[0];
+      if (otherGuy.isConnected) 
+        return true;
+    }
+    return false;
   }
 
   openNewPrivateChatModal(content) {

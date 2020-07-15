@@ -10,5 +10,6 @@ namespace Web.Models
         public string DisplayName { get; set; }
         public MessageInfo LastMessage { get; set; }
         public IEnumerable<MessageInfo> Messages { get; set; }
+        public IEnumerable<VUser> Members { get; set; }
     }
 }

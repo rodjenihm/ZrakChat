@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using Web.Models;
 using Web.Helpers;
+using Web.Models;
 
 namespace Web.Services
 {
@@ -50,6 +50,14 @@ namespace Web.Services
                 ("uspGetPrivateRoom @UserId1, @UserId2", new { UserId1 = id1, UserId2 = id2 }))
                 .FirstOrDefault();
             return userRoom;
+        }
+
+        public async Task<IEnumerable<VUser>> GetRoomMembersByRoomIdAsync(int roomId)
+        {
+            using var connection = new SqlConnection(connectionString.Value);
+            var users = await connection.QueryAsync<VUser>
+                ("uspGetUsersByRoomId @RoomId", new { RoomId = roomId });
+            return users;
         }
     }
 }

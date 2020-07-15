@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using Web.Models;
 using Web.Helpers;
+using Web.Models;
 
 namespace Web.Services
 {

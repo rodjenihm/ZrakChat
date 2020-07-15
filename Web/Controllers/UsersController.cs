@@ -10,8 +10,8 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Web.Dto;
-using Web.Models;
 using Web.Helpers;
+using Web.Models;
 using Web.Services;
 
 namespace Web.Controllers

@@ -1,4 +1,5 @@
 import { Message } from './message';
+import { VUser } from './v.user';
 
 export interface UserRoom {
   created?: Date;
@@ -6,4 +7,5 @@ export interface UserRoom {
   displayName: string;
   lastMessage: Message;
   messages: Message[];
+  members: VUser[];
 }

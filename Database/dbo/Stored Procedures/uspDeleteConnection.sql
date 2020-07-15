@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[uspDeleteConnection]
 	@UserId INT,
+	@Username NVARCHAR(30),
 	@ConnectionId NVARCHAR(38)
 AS
 BEGIN
@@ -12,7 +13,7 @@ BEGIN
 	END
 
 	DELETE FROM [dbo].[UserConnections]
-	WHERE [UserId] = @UserId AND [ConnectionId] = @ConnectionId
+	WHERE [UserId] = @UserId AND [Username] = @Username AND [ConnectionId] = @ConnectionId
 
 	SET NOCOUNT OFF;
 END

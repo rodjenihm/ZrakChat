@@ -47,4 +47,16 @@ export class SignalRService {
       func(data);
     });
   }
+
+  public addOnGoOnlineListener = (func) => {
+    this.hubConnection.on('userGoOnline', (data) => {
+      func(data);
+    });
+  }
+
+  public addOnGoOfflineListener = (func) => {
+    this.hubConnection.on('userGoOffline', (data) => {
+      func(data);
+    });
+  }
 }

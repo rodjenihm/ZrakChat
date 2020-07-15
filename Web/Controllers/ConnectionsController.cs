@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Web.Dto;
 using Web.Services;
 
@@ -30,7 +29,7 @@ namespace Web.Controllers
                 if (model.UserId != claimId)
                     return StatusCode(StatusCodes.Status401Unauthorized);
 
-                await connectionService.CreateConnectionAsync(model.UserId, model.ConnectionId);
+                await connectionService.CreateConnectionAsync(model.UserId, User.Identity.Name, model.ConnectionId);
                 return Ok();
             }
             catch (SqlException e)
@@ -52,7 +51,7 @@ namespace Web.Controllers
                 if (model.UserId != claimId)
                     return StatusCode(StatusCodes.Status401Unauthorized);
 
-                await connectionService.DeleteConnectionAsync(model.UserId, model.ConnectionId);
+                await connectionService.DeleteConnectionAsync(model.UserId, User.Identity.Name, model.ConnectionId);
                 return Ok();
             }
             catch (SqlException e)

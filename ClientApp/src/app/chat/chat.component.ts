@@ -29,6 +29,26 @@ export class ChatComponent implements OnInit {
       }
       this.playNotification();
     });
+
+    this.signalRService.addOnGoOnlineListener((userId) => {
+      this.roomService.rooms.forEach(r => {
+        r.members.forEach(m => {
+          if (m.id === userId)
+            m.isConnected = true;
+            console.log(userId);
+        })
+      })
+    });
+
+    this.signalRService.addOnGoOfflineListener((userId) => {
+      this.roomService.rooms.forEach(r => {
+        r.members.forEach(m => {
+          if (m.id === userId)
+            m.isConnected = false;
+            console.log(userId);
+        })
+      })
+    });
   }
 
   playNotification(){

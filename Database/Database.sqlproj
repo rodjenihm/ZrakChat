@@ -88,6 +88,7 @@
     <Build Include="dbo\Stored Procedures\uspDeleteConnection.sql" />
     <Build Include="dbo\Stored Procedures\uspGetConnectionIdsByUserId.sql" />
     <Build Include="dbo\Stored Procedures\uspGetUsersByRoomId.sql" />
+    <Build Include="dbo\Stored Procedures\uspIsUserConnected.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Database.publish.xml" />
