@@ -2,7 +2,7 @@ import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { RoomService } from '../services/room.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { User } from '../models/user';
-import { Observable, of } from 'rxjs';
+import { Observable, of, BehaviorSubject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
 import { SearchService } from '../services/search.service';
 import { UserService } from '../services/user.service';
@@ -32,6 +32,10 @@ export class ChatHomeComponent implements OnInit {
   message;
   isLoading = false;
 
+  private typingUsernames: string[] = [];
+  private typingSubject: BehaviorSubject<string[]>;
+  public typing: Observable<string[]>;
+  
   constructor(
     public roomService: RoomService,
     public userService: UserService,
@@ -42,6 +46,24 @@ export class ChatHomeComponent implements OnInit {
     private modalService: NgbModal) { }
 
   ngOnInit(): void {
+    this.typingSubject = new BehaviorSubject<string[]>(this.typingUsernames);
+    this.typing = this.typingSubject.asObservable();
+
+    this.signalRService.addOnStartTypingListener((roomId, username) => {
+      const idx = this.typingUsernames.findIndex(u => u === username);
+      if (idx == -1) {
+        this.typingUsernames.push(username);
+        this.typingSubject.next(this.typingUsernames);
+      }
+    })
+
+    this.signalRService.addOnStopTypingListener((roomId, username) => {
+      const idx = this.typingUsernames.findIndex(u => u === username);
+      if (idx > -1) {
+        this.typingUsernames.splice(idx, 1);
+        this.typingSubject.next(this.typingUsernames);
+      }
+    })
   }
 
   formatter = (user: User) => user.username;
@@ -121,21 +143,33 @@ export class ChatHomeComponent implements OnInit {
       .subscribe(message => {
         this.selectedRoom.messages.unshift(message);
         this.selectedRoom.lastMessage = message;
-        //this.signalRService.notifySendMessage(message);
       }, httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error sending message'));
     this.message = null;
+    this.signalRService.notifyStopTyping(this.selectedRoom.id, this.userService.currentUserValue.username);
   }
 
   isOnline(room: UserRoom) {
-    if (room.members.length == 2) {
-      const otherGuy = room.members.filter(u => u.id !== this.userService.currentUserValue.id)[0];
-      if (otherGuy.isConnected) 
+    const otherMembers = room.members.filter(u => u.id !== this.userService.currentUserValue.id);
+    for (let i = 0; i < otherMembers.length; i++) {
+      if (otherMembers[i].isConnected)
         return true;
-    }
+    }  
     return false;
   }
 
-  openNewPrivateChatModal(content) {
+  isGroup() {
+    return this.selectedRoom.members.length > 2;
+  }
+
+  notifyTyping(event) {
+    if (this.message) {
+      this.signalRService.notifyStartTyping(this.selectedRoom.id, this.userService.currentUserValue.username);
+      return;
+    }
+    this.signalRService.notifyStopTyping(this.selectedRoom.id, this.userService.currentUserValue.username);
+  }
+
+  openModal(content) {
     this.modalService.open(content, { ariaLabelledBy: 'modal-basic', scrollable: false, centered: true });
   }
 }

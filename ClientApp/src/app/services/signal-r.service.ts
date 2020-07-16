@@ -46,6 +46,14 @@ export class SignalRService {
     this.hubConnection.invoke('SendMessage', message);
   }
 
+  public notifyStartTyping(roomId, username) {
+    this.hubConnection.invoke('StartTyping', roomId, username);
+  }
+
+  public notifyStopTyping(roomId, username) {
+    this.hubConnection.invoke('StopTyping', roomId, username);
+  }
+
   public addOnSendMessageListener = (func) => {
     this.hubConnection.on('updateMessages', (data) => {
       func(data);
@@ -61,6 +69,18 @@ export class SignalRService {
   public addOnGoOfflineListener = (func) => {
     this.hubConnection.on('userGoOffline', (data) => {
       func(data);
+    });
+  }
+
+  public addOnStartTypingListener = (func) => {
+    this.hubConnection.on('userStartTyping', (roomId, username) => {
+      func(roomId, username);
+    });
+  }
+
+  public addOnStopTypingListener = (func) => {
+    this.hubConnection.on('userStopTyping', (roomId, username) => {
+      func(roomId, username);
     });
   }
 }

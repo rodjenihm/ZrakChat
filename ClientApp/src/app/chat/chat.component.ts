@@ -27,13 +27,10 @@ export class ChatComponent implements OnInit, OnDestroy {
 	      this.playNotification();
         return;
       } else {
-	      const idj = this.roomService.rooms[idx].messages.findIndex(m => m.id === message.id);
-      	if (idj === -1) {		
 	        this.roomService.rooms[idx].lastMessage = message;
             if (this.roomService.rooms[idx].messages)
               this.roomService.rooms[idx].messages.unshift(message);
 	        this.playNotification();
-	      }
       }
     });
 

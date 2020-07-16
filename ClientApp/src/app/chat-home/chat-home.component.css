@@ -65,3 +65,7 @@
 .message-self:hover {
   background: rgba(0, 188, 140, 0.3);
 }
+
+i.fa {
+  font-size: 12px;
+}
