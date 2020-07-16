@@ -5,6 +5,7 @@ using System;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Web.Dto;
 using Web.Models;
 using Web.Services;
 
@@ -77,11 +78,31 @@ namespace Web.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
-    }
 
-    public class RoomCreatePrivateDto
-    {
-        public int CreatorId { get; set; }
-        public int ObjectId { get; set; }
+        [HttpPost("createGroup")]
+        public async Task<IActionResult> CreateGroup(RoomCreateGroupDto model)
+        {
+            try
+            {
+                if (model.MemberKeys.Count() <= 2)
+                    return BadRequest(new { message = "List of member Ids is invalid." });
+
+                var claimId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id").Value);
+                if (model.CreatorId != claimId)
+                    return StatusCode(StatusCodes.Status401Unauthorized);
+
+                var userRoom = await roomService.CreateGroupRoomForUserAsync(model.CreatorId, model.DisplayName, model.MemberKeys);
+
+                return Ok(userRoom);
+            }
+            catch (SqlException e)
+            {
+                return BadRequest(new { message = e.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
     }
 }

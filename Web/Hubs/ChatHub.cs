@@ -24,31 +24,54 @@ namespace Web.Hubs
         public override async Task OnConnectedAsync()
         {
 
-            var claimId = int.Parse(Context.User.Claims.FirstOrDefault(c => c.Type == "id").Value);
-            var username = Context.User.Identity.Name;
-            var connectionId = Context.ConnectionId;
-            await connectionService.CreateConnectionAsync(claimId, username, connectionId);
-            await Clients.All.SendAsync("userGoOnline", claimId);
+            try
+            {
+                var claimId = int.Parse(Context.User.Claims.FirstOrDefault(c => c.Type == "id").Value);
+                var username = Context.User.Identity.Name;
+                var connectionId = Context.ConnectionId;
+                await connectionService.CreateConnectionAsync(claimId, username, connectionId);
+                await Clients.All.SendAsync("userGoOnline", claimId);
+            }
+            catch (Exception)
+            {
+            }
+
             await base.OnConnectedAsync();
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            var claimId = int.Parse(Context.User.Claims.FirstOrDefault(c => c.Type == "id").Value);
-            var username = Context.User.Identity.Name;
-            var connectionId = Context.ConnectionId;
-            await connectionService.DeleteConnectionAsync(claimId, username, connectionId);
-            await Clients.All.SendAsync("userGoOffline", claimId);
+            try
+            {
+                var claimId = int.Parse(Context.User.Claims.FirstOrDefault(c => c.Type == "id").Value);
+                var username = Context.User.Identity.Name;
+                var connectionId = Context.ConnectionId;
+                await connectionService.DeleteConnectionAsync(claimId, username, connectionId);
+                await Clients.All.SendAsync("userGoOffline", claimId);
+            }
+            catch (Exception)
+            {
+            }
+
             await base.OnDisconnectedAsync(exception);
         }
 
-        public async Task SendMessage(MessageInfo message)
+        public async Task StartTyping(int roomId, string username)
         {
-            var sendTo = (await userService.GetUsersByRoomIdAsync(message.RoomId))
-                    .Where(u => u != message.Username)
+            var sendTo = (await userService.GetUsersByRoomIdAsync(roomId))
+                    .Where(u => u != username)
                     .ToList();
 
-            await Clients.Users(sendTo).SendAsync("updateMessages", message);
+            await Clients.Users(sendTo).SendAsync("userStartTyping", roomId, username);
+        }
+
+        public async Task StopTyping(int roomId, string username)
+        {
+            var sendTo = (await userService.GetUsersByRoomIdAsync(roomId))
+                    .Where(u => u != username)
+                    .ToList();
+
+            await Clients.Users(sendTo).SendAsync("userStopTyping", roomId, username);
         }
     }
 }

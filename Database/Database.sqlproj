@@ -60,6 +60,7 @@
     <Folder Include="dbo\Tables" />
     <Folder Include="dbo\Stored Procedures" />
     <Folder Include="dbo\Views" />
+    <Folder Include="dbo\Types" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\Users.sql" />
@@ -89,6 +90,8 @@
     <Build Include="dbo\Stored Procedures\uspGetConnectionIdsByUserId.sql" />
     <Build Include="dbo\Stored Procedures\uspGetUsersByRoomId.sql" />
     <Build Include="dbo\Stored Procedures\uspIsUserConnected.sql" />
+    <Build Include="dbo\Types\PRIMARYKEYS.sql" />
+    <Build Include="dbo\Stored Procedures\uspCreateGroupRoom.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Database.publish.xml" />

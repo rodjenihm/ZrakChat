@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,6 +18,22 @@ namespace Web.Services
         public RoomService(ConnectionString connectionString)
         {
             this.connectionString = connectionString;
+        }
+
+        public async Task<UserRoom> CreateGroupRoomForUserAsync(int userId, string displayName, IEnumerable<int> memberKeys)
+        {
+            using var connection = new SqlConnection(connectionString.Value);
+            var dt = new DataTable();
+            dt.Columns.Add("Id", typeof(int));
+
+            foreach (var memberKey in memberKeys)
+                dt.Rows.Add(memberKey);
+
+            var userRoom = (await connection.QueryAsync<UserRoom>
+                ("uspCreateGroupRoom",
+                new { UserId = userId, DisplayName = displayName, MemberKeys = dt.AsTableValuedParameter("dbo.PRIMARYKEYS") }, commandType: CommandType.StoredProcedure))
+                .FirstOrDefault();
+            return userRoom;
         }
 
         public async Task<UserRoom> CreatePrivateRoomForUsersAsync(int id1, int id2)
