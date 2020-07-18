@@ -80,7 +80,7 @@ namespace Web.Controllers
                     .Where(u => u != messageInfo.Username)
                     .ToList();
 
-                Task.Run(() => context.Clients.Users(sendTo).SendAsync("updateMessages", messageInfo));
+                context.Clients.Users(sendTo).SendAsync("updateMessages", messageInfo);
 
                 return Ok(messageInfo);
             }

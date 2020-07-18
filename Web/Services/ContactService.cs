@@ -23,7 +23,7 @@ namespace Web.Services
         {
             using var connection = new SqlConnection(connectionString.Value);
             return (await connection.QueryAsync<UserContact>("uspCreateContact @UserId, @ContactId, @Created",
-                new { UserId = userId, ContactId = contactId, Created = DateTime.Now }))
+                new { UserId = userId, ContactId = contactId, Created = DateTime.UtcNow }))
                 .FirstOrDefault();
         }
 

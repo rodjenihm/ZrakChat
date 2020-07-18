@@ -22,7 +22,7 @@
       <ng-template #lastMessage>
         <p class="text-muted font-italic" *ngIf="userService.currentUserValue.username === room.lastMessage.username">You: {{ room.lastMessage.text.substring(0, 15) }}...</p>  
         <p class="text-muted font-italic" *ngIf="userService.currentUserValue.username !== room.lastMessage.username">{{ room.lastMessage.username }}: {{ room.lastMessage.text.substring(0, 15) }}...</p>  
-        <p class="text-info font-italic text-sm">{{ room.lastMessage.sent | date:'short'}}</p>
+        <p class="text-info font-italic text-sm">{{ room.lastMessage.sent | timeago }}</p>
       </ng-template>
     </div>
   </div>
@@ -31,11 +31,16 @@
       <ng-spinner size="5" type="border" color="" *ngIf="isLoading"></ng-spinner>
     </div>
     <div *ngIf="selectedRoom && selectedRoom.messages" style="overflow-y: auto;">
-      <div class="bg-dark d-flex border-bottom" style="position: sticky; top: 0" *ngIf="isGroup()">
-        <p class="m-1" *ngFor="let member of selectedRoom.members">
-          {{ member.username }} 
-          <i class="fa fa-circle text-success" aria-hidden="true" *ngIf="member.isConnected" title="User is online"></i>
-        </p>
+      <div class="bg-dark border-bottom" style="position: sticky; top: 0">
+        <div class="d-flex">
+          <p class="m-2" *ngFor="let member of getOtherMembers(selectedRoom)">
+            {{ member.username }} 
+            <i class="fa fa-circle text-success" aria-hidden="true" *ngIf="member.isConnected" title="User is online"></i>
+          </p>
+          <p class="mt-2 text-muted" *ngIf="!isGroup() && !getOtherMembers(selectedRoom)[0].isConnected">
+            Last active {{ getOtherMembers(selectedRoom)[0].lastSeen | timeago }}
+          </p>
+        </div>
       </div>
       <p class="text-muted text-center font-italic" *ngIf="selectedRoom.messages.length === 0; else showMessages">This conversation is empty</p>
       <ng-template #showMessages>
@@ -43,7 +48,7 @@
         <div class="message" [class.message-self]="message.username === userService.currentUserValue.username" *ngFor="let message of selectedRoom.messages" @fadeIn>
           <p class="font-italic">{{ message.username }}</p>
           <p class="text-justify">{{ message.text }}</p>
-          <p class="text-muted">{{ message.sent | date:'short' }}</p>
+          <p class="text-muted">{{ message.sent | timeago }}</p>
         </div>
       </ng-template>
     </div>

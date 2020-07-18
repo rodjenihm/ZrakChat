@@ -148,8 +148,12 @@ export class ChatHomeComponent implements OnInit {
     this.signalRService.notifyStopTyping(this.selectedRoom.id, this.userService.currentUserValue.username);
   }
 
+  getOtherMembers(room) {
+    return room.members.filter(u => u.id !== this.userService.currentUserValue.id);
+  }
+
   isOnline(room: UserRoom) {
-    const otherMembers = room.members.filter(u => u.id !== this.userService.currentUserValue.id);
+    const otherMembers = this.getOtherMembers(room);
     for (let i = 0; i < otherMembers.length; i++) {
       if (otherMembers[i].isConnected)
         return true;

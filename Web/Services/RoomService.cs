@@ -36,7 +36,7 @@ namespace Web.Services
                     UserId = userId,
                     DisplayName = displayName,
                     MemberKeys = dt.AsTableValuedParameter("dbo.PRIMARYKEYS"),
-                    Created = DateTime.Now
+                    Created = DateTime.UtcNow
                 },
                     commandType: CommandType.StoredProcedure))
                 .FirstOrDefault();
@@ -47,7 +47,8 @@ namespace Web.Services
         {
             using var connection = new SqlConnection(connectionString.Value);
             var userRoom = (await connection.QueryAsync<UserRoom>
-                ("uspCreatePrivateRoom @UserId1, @UserId2, @Created", new { UserId1 = id1, UserId2 = id2, Created = DateTime.Now }))
+                ("uspCreatePrivateRoom @UserId1, @UserId2, @Created",
+                new { UserId1 = id1, UserId2 = id2, Created = DateTime.UtcNow }))
                 .FirstOrDefault();
             return userRoom;
         }

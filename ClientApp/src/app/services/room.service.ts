@@ -37,7 +37,7 @@ export class RoomService {
       .pipe(
         map(body => {
           if (body) {
-            this.rooms.unshift(body);
+            this.refreshRooms();
             return true;
           }
           return false;

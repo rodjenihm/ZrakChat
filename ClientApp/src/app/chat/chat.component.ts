@@ -46,8 +46,10 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.signalRService.addOnGoOfflineListener((userId) => {
       this.roomService.rooms.forEach(r => {
         r.members.forEach(m => {
-          if (m.id === userId)
+          if (m.id === userId) {
             m.isConnected = false;
+            m.lastSeen = new Date(Date.now())
+          }
         })
       })
     });

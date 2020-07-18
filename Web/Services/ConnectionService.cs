@@ -28,7 +28,7 @@ namespace Web.Services
             using var connection = new SqlConnection(connectionString.Value);
             await connection.ExecuteAsync
                 ("uspCreateConnection @UserId, @Username, @ConnectionId, @Created",
-                new { UserId = userId, Username = username, ConnectionId = connectionId, Created = DateTime.Now });
+                new { UserId = userId, Username = username, ConnectionId = connectionId, Created = DateTime.UtcNow });
         }
 
         public async Task DeleteConnectionAsync(int userId, string username, string connectionId)

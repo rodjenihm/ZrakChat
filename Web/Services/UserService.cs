@@ -55,7 +55,7 @@ namespace Web.Services
         public async Task<bool> SetLastSeenAsync(int userId)
         {
             using var connection = new SqlConnection(connectionString.Value);
-            await connection.ExecuteAsync("uspUpdateUserLastSeen @UserId, @LastSeen", new { UserId = userId, LastSeen = DateTime.Now });
+            await connection.ExecuteAsync("uspUpdateUserLastSeen @UserId, @LastSeen", new { UserId = userId, LastSeen = DateTime.UtcNow });
             return true;
         }
     }

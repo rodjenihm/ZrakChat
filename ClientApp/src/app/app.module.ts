@@ -23,6 +23,7 @@ import { ChatHomeComponent } from './chat-home/chat-home.component';
 import { RoomService } from './services/room.service';
 import { MessageService } from './services/message.service';
 import { SignalRService } from './services/signal-r.service';
+import { TimeagoModule } from 'ngx-timeago';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,7 @@ import { SignalRService } from './services/signal-r.service';
     LoginComponent,
     ChatComponent,
     ContactsComponent,
-    ChatHomeComponent,
+    ChatHomeComponent
   ],
   imports: [
     BrowserModule,
@@ -43,7 +44,8 @@ import { SignalRService } from './services/signal-r.service';
     ReactiveFormsModule,
     BrowserAnimationsModule,
     ToastrModule.forRoot(),
-    NgSpinnerModule
+    NgSpinnerModule,
+    TimeagoModule.forRoot()
   ],
   providers: [
     {

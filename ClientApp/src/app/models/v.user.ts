@@ -4,5 +4,6 @@ export interface VUser {
     username: string;
     displayName: string;
     isConnected: boolean;
+    lastSeen?: Date;
   }
   
