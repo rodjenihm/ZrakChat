@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[uspCreateContact]
 	@UserId INT,
-	@ContactId INT
+	@ContactId INT,
+	@Created DATETIME2(7)
 AS
 BEGIN
 	SET NOCOUNT ON
@@ -18,9 +19,9 @@ BEGIN
 	END
 
 	INSERT INTO [dbo].[Contacts] 
-	([UserId], [ContactId])
+	([UserId], [ContactId], [Created])
 	VALUES
-	(@UserId, @ContactId)
+	(@UserId, @ContactId, @Created)
 
 	SELECT [Created], [ContactId] AS Id, [ContactUsername] AS Username, [ContactDisplayName] AS DisplayName
 	FROM [dbo].[vUserContacts] WHERE [UserId] = @UserId AND [ContactId] = @ContactId

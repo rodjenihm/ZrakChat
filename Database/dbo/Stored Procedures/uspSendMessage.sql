@@ -1,7 +1,8 @@
 ﻿CREATE PROCEDURE [dbo].[uspSendMessage]
 	@UserId INT,
 	@RoomId INT,
-	@Text NVARCHAR(255)
+	@Text NVARCHAR(255),
+	@Created DATETIME2(7)
 AS
 BEGIN
 	SET NOCOUNT ON
@@ -21,9 +22,9 @@ BEGIN
 	BEGIN TRANSACTION [Tran1]
 		BEGIN TRY
 			INSERT INTO [dbo].[Messages]
-			([UserId], [RoomId], [Text])
+			([UserId], [RoomId], [Text], [Created])
 			VALUES
-			(@UserId, @RoomId, @Text)
+			(@UserId, @RoomId, @Text, @Created)
 
 			DECLARE @messageId INT = SCOPE_IDENTITY()
 

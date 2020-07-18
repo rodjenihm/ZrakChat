@@ -1,14 +1,15 @@
 ﻿CREATE PROCEDURE [dbo].[uspCreateGroupRoom]
 	@UserId INT,
 	@DisplayName NVARCHAR(30),
-	@MemberKeys [dbo].[PRIMARYKEYS] READONLY
+	@MemberKeys [dbo].[PRIMARYKEYS] READONLY,
+	@Created DATETIME2(7)
 AS
 BEGIN
 	SET NOCOUNT ON
 
 	BEGIN TRANSACTION [Tran1]
 		BEGIN TRY
-			INSERT INTO [dbo].[Rooms] ([Created]) VALUES (DEFAULT)
+			INSERT INTO [dbo].[Rooms] ([Created]) VALUES (@Created)
 			DECLARE @roomId INT = SCOPE_IDENTITY()
 
 			INSERT INTO [dbo].[UserRooms] ([UserId], [RoomId], [DisplayName], [Active])

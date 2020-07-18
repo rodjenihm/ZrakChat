@@ -104,5 +104,28 @@ namespace Web.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
+
+        [HttpPost("inactivate")]
+        public async Task<IActionResult> Inactivate(RoomInactivateDto model)
+        {
+            try
+            {
+                var claimId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id").Value);
+                if (model.UserId != claimId)
+                    return StatusCode(StatusCodes.Status401Unauthorized);
+
+                await roomService.InactivateRoomAsync(model.UserId, model.RoomId);
+
+                return Ok();
+            }
+            catch (SqlException e)
+            {
+                return BadRequest(new { message = e.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
     }
 }

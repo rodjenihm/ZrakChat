@@ -29,7 +29,7 @@ namespace Web.Services
         {
             using var connection = new SqlConnection(connectionString.Value);
             var messageInfo = (await connection.QueryAsync<Message>
-                ("uspSendMessage @UserId, @RoomId, @Text", message))
+                ("uspSendMessage @UserId, @RoomId, @Text, @Created", message))
                 .FirstOrDefault();
             return messageInfo;
         }

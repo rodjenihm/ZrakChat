@@ -31,7 +31,14 @@ namespace Web.Services
 
             var userRoom = (await connection.QueryAsync<UserRoom>
                 ("uspCreateGroupRoom",
-                new { UserId = userId, DisplayName = displayName, MemberKeys = dt.AsTableValuedParameter("dbo.PRIMARYKEYS") }, commandType: CommandType.StoredProcedure))
+                new
+                {
+                    UserId = userId,
+                    DisplayName = displayName,
+                    MemberKeys = dt.AsTableValuedParameter("dbo.PRIMARYKEYS"),
+                    Created = DateTime.Now
+                },
+                    commandType: CommandType.StoredProcedure))
                 .FirstOrDefault();
             return userRoom;
         }
@@ -40,7 +47,7 @@ namespace Web.Services
         {
             using var connection = new SqlConnection(connectionString.Value);
             var userRoom = (await connection.QueryAsync<UserRoom>
-                ("uspCreatePrivateRoom @UserId1, @UserId2", new { UserId1 = id1, UserId2 = id2 }))
+                ("uspCreatePrivateRoom @UserId1, @UserId2, @Created", new { UserId1 = id1, UserId2 = id2, Created = DateTime.Now }))
                 .FirstOrDefault();
             return userRoom;
         }
@@ -75,6 +82,13 @@ namespace Web.Services
             var users = await connection.QueryAsync<VUser>
                 ("uspGetUsersByRoomId @RoomId", new { RoomId = roomId });
             return users;
+        }
+
+        public async Task InactivateRoomAsync(int userId, int roomId)
+        {
+            using var connection = new SqlConnection(connectionString.Value);
+            await connection.ExecuteAsync
+                ("uspInactivateUserRoom @UserId, @RoomId", new { UserId = userId, RoomId = roomId });
         }
     }
 }

@@ -11,5 +11,6 @@ namespace Web.Services
         Task<UserRoom> CreateGroupRoomForUserAsync(int userId, string displayName, IEnumerable<int> memberKeys);
         Task<IEnumerable<UserRoom>> GetActiveRoomsByUserIdAsync(int userId);
         Task<IEnumerable<VUser>> GetRoomMembersByRoomIdAsync(int roomId);
+        Task InactivateRoomAsync(int userId, int roomId);
     }
 }

@@ -47,6 +47,7 @@ namespace Web.Hubs
                 var username = Context.User.Identity.Name;
                 var connectionId = Context.ConnectionId;
                 await connectionService.DeleteConnectionAsync(claimId, username, connectionId);
+                await userService.SetLastSeenAsync(claimId);
                 await Clients.All.SendAsync("userGoOffline", claimId);
             }
             catch (Exception)

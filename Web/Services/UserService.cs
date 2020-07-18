@@ -50,5 +50,12 @@ namespace Web.Services
             await connection.ExecuteAsync("uspRegisterUser @Username, @DisplayName, @PasswordHash", user);
             return true;
         }
+
+        public async Task<bool> SetLastSeenAsync(int userId)
+        {
+            using var connection = new SqlConnection(connectionString.Value);
+            await connection.ExecuteAsync("uspUpdateUserLastSeen @UserId", new { UserId = userId });
+            return true;
+        }
     }
 }
