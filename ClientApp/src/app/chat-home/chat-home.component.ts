@@ -173,6 +173,10 @@ export class ChatHomeComponent implements OnInit {
     this.signalRService.notifyStopTyping(this.selectedRoom.id, this.userService.currentUserValue.username);
   }
 
+  utcToLocal(date) {
+    return new Date(new Date(date).getTime() - (new Date()).getTimezoneOffset()*60*1000);
+  }
+
   openModal(content) {
     this.modalService.open(content, { ariaLabelledBy: 'modal-basic', scrollable: false, centered: true });
   }

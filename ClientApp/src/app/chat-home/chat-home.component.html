@@ -22,7 +22,7 @@
       <ng-template #lastMessage>
         <p class="text-muted font-italic" *ngIf="userService.currentUserValue.username === room.lastMessage.username">You: {{ room.lastMessage.text.substring(0, 15) }}...</p>  
         <p class="text-muted font-italic" *ngIf="userService.currentUserValue.username !== room.lastMessage.username">{{ room.lastMessage.username }}: {{ room.lastMessage.text.substring(0, 15) }}...</p>  
-        <p class="text-info font-italic text-sm">{{ room.lastMessage.sent | timeago }}</p>
+        <p class="text-info font-italic text-sm">{{ utcToLocal(room.lastMessage.sent)  | timeago }}</p>
       </ng-template>
     </div>
   </div>
@@ -48,7 +48,7 @@
         <div class="message" [class.message-self]="message.username === userService.currentUserValue.username" *ngFor="let message of selectedRoom.messages" @fadeIn>
           <p class="font-italic">{{ message.username }}</p>
           <p class="text-justify">{{ message.text }}</p>
-          <p class="text-muted">{{ message.sent | timeago }}</p>
+          <p class="text-muted">{{ utcToLocal(message.sent) | timeago }}</p>
         </div>
       </ng-template>
     </div>
