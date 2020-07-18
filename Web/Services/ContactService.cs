@@ -22,15 +22,16 @@ namespace Web.Services
         public async Task<UserContact> CreateContactAsync(int userId, int contactId)
         {
             using var connection = new SqlConnection(connectionString.Value);
-            return (await connection.QueryAsync<UserContact>("uspCreateContact @UserId, @ContactId", new { UserId = userId, ContactId = contactId }))
+            return (await connection.QueryAsync<UserContact>("uspCreateContact @UserId, @ContactId, @Created",
+                new { UserId = userId, ContactId = contactId, Created = DateTime.Now }))
                 .FirstOrDefault();
         }
 
         public async Task<bool> DeleteContactAsync(int userId, int contactId)
         {
             using var connection = new SqlConnection(connectionString.Value);
-            await connection.ExecuteAsync("uspDeleteContact @UserId, @ContactId, @Created",
-                new { UserId = userId, ContactId = contactId, Created = DateTime.Now });
+            await connection.ExecuteAsync("uspDeleteContact @UserId, @ContactId",
+                new { UserId = userId, ContactId = contactId });
             return true;
         }
 

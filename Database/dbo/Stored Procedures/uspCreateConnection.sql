@@ -1,7 +1,8 @@
 ﻿CREATE PROCEDURE [dbo].[uspCreateConnection]
 	@UserId INT,
 	@Username NVARCHAR(30),
-	@ConnectionId NVARCHAR(38)
+	@ConnectionId NVARCHAR(38),
+	@Created DATETIME2(7)
 AS
 BEGIN
 	SET NOCOUNT ON
@@ -13,9 +14,9 @@ BEGIN
 	END
 
 	INSERT INTO [dbo].[UserConnections] 
-	([UserId], [Username], [ConnectionId])
+	([UserId], [Username], [ConnectionId], [Created])
 	VALUES
-	(@UserId, @Username, @ConnectionId)
+	(@UserId, @Username, @ConnectionId, @Created)
 
 	SET NOCOUNT OFF;
 END

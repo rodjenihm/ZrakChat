@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
@@ -54,7 +55,7 @@ namespace Web.Services
         public async Task<bool> SetLastSeenAsync(int userId)
         {
             using var connection = new SqlConnection(connectionString.Value);
-            await connection.ExecuteAsync("uspUpdateUserLastSeen @UserId", new { UserId = userId });
+            await connection.ExecuteAsync("uspUpdateUserLastSeen @UserId, @LastSeen", new { UserId = userId, LastSeen = DateTime.Now });
             return true;
         }
     }

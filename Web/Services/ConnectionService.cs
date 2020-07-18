@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
@@ -26,7 +27,8 @@ namespace Web.Services
         {
             using var connection = new SqlConnection(connectionString.Value);
             await connection.ExecuteAsync
-                ("uspCreateConnection @UserId, @Username, @ConnectionId", new { UserId = userId, Username = username, ConnectionId = connectionId });
+                ("uspCreateConnection @UserId, @Username, @ConnectionId, @Created",
+                new { UserId = userId, Username = username, ConnectionId = connectionId, Created = DateTime.Now });
         }
 
         public async Task DeleteConnectionAsync(int userId, string username, string connectionId)

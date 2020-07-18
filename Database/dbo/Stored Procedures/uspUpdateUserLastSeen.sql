@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[uspUpdateUserLastSeen]
-	@UserId INT
+	@UserId INT,
+	@LastSeen DATETIME2(7)
 AS
 BEGIN
 	SET NOCOUNT ON
@@ -11,7 +12,7 @@ BEGIN
 	END
 
 	UPDATE [dbo].[Users]
-	SET [LastSeen] = GETDATE()
+	SET [LastSeen] = @LastSeen
 	WHERE [Id] = @UserId
 
 	SET NOCOUNT OFF
