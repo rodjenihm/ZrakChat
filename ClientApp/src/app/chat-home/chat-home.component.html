@@ -13,7 +13,7 @@
     <div class="text-center">
       <ng-spinner class="mt-3" size="5" type="border" color="" *ngIf="!roomService.dataLoaded"></ng-spinner>
     </div>
-    <div class="room" [class.room-selected]="room === selectedRoom" *ngFor="let room of getTableData()" (click)="openRoom(room)">
+    <div class="room" [class.room-selected]="room === selectedRoom" [class.room-new-message]="room.newMessages" *ngFor="let room of getTableData()" (click)="openRoom(room)">
       <div style="display: flex; justify-content: space-between;">
         <p class="text-success">{{ room.displayName }}</p> 
         <i class="fa fa-circle text-success" aria-hidden="true" *ngIf="isOnline(room)" title="User is online"></i>

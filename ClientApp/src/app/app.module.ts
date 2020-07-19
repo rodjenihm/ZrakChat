@@ -39,7 +39,7 @@ class CustomFormatter extends TimeagoFormatter {
     const YEAR = DAY * 365;
     
     if (seconds < 5)
-      return 'now';
+      return 'moment ago';
 
     if (seconds < MINUTE)
       return 'less than a minute ago';

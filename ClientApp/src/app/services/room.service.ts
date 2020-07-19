@@ -25,6 +25,11 @@ export class RoomService {
     this.get()
       .subscribe(rooms => {
         this.rooms = rooms;
+        this.rooms.forEach(r => {
+          const idx = r.members.findIndex(m => m.username === this.userService.currentUserValue.username);
+          if (r.lastMessage)
+            r.newMessages = r.lastMessage.id > r.members[idx].lastMessageSeenId;
+        })
         this.dataLoaded = true;
       }, httoErrorResponse => {
         this.dataLoaded = true;

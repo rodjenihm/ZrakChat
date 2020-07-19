@@ -2,11 +2,13 @@
 
 namespace Web.Dto
 {
-    public class RoomInactivateDto
+    public class MessageSetSeenDto
     {
         [Required]
         public int UserId { get; set; }
         [Required]
         public int RoomId { get; set; }
+        [Required]
+        public int MessageId { get; set; }
     }
 }

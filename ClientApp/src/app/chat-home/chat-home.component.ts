@@ -1,9 +1,9 @@
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, OnDestroy } from '@angular/core';
 import { RoomService } from '../services/room.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { User } from '../models/user';
 import { Observable, of, BehaviorSubject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, switchMap, catchError, map, share } from 'rxjs/operators';
 import { SearchService } from '../services/search.service';
 import { UserService } from '../services/user.service';
 import { NotificationService } from '../services/notification.service';
@@ -25,10 +25,10 @@ import { trigger, transition, style, animate } from '@angular/animations';
     ]),
   ],
 })
-export class ChatHomeComponent implements OnInit {
+export class ChatHomeComponent implements OnInit, OnDestroy {
   user: User;
   searchTerm = '';
-  selectedRoom: UserRoom;
+  selectedRoom: UserRoom = null;
   message;
   isLoading = false;
 
@@ -45,13 +45,61 @@ export class ChatHomeComponent implements OnInit {
     public signalRService: SignalRService,
     private modalService: NgbModal) { }
 
+  ngOnDestroy(): void {
+    this.selectedRoom = null;
+  }
+
   ngOnInit(): void {
     this.typingSubject = new BehaviorSubject<string[]>(this.typingUsernames);
     this.typing = this.typingSubject.asObservable();
 
+    this.signalRService.addOnGoOnlineListener((userId) => {
+      this.roomService.rooms.forEach(r => {
+        r.members.forEach(m => {
+          if (m.id === userId)
+            m.isConnected = true;
+        })
+      })
+    });
+
+    this.signalRService.addOnGoOfflineListener((userId) => {
+      this.roomService.rooms.forEach(r => {
+        r.members.forEach(m => {
+          if (m.id === userId) {
+            m.isConnected = false;
+            m.lastSeen = new Date(new Date().getTime() + (new Date()).getTimezoneOffset()*60*1000);
+          }
+        })
+      })
+    });
+  
+    this.signalRService.addOnSendMessageListener((message) => {
+      const idx = this.roomService.rooms.findIndex(r => r.id === message.roomId);
+      if (idx === -1)  {
+        this.roomService.refreshRooms();
+	      this.playNotification();
+        return;
+      } else {
+	        this.roomService.rooms[idx].lastMessage = message;
+          if (this.roomService.rooms[idx].messages) {
+            const idj = this.roomService.rooms[idx].messages.findIndex(m => m.id == message.id);
+            if (idj === -1) {
+              this.roomService.rooms[idx].messages.unshift(message);
+              this.playNotification();
+            }
+          }
+          if (this.selectedRoom && (this.selectedRoom.id === message.roomId)) 
+            this.messageService.setLastSeenByRoomIdForUserId(this.selectedRoom.id, message.id)
+              .subscribe(() => {},
+              httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error loading messages'));
+          else 
+            this.roomService.rooms[idx].newMessages = true;
+      }
+    });
+
     this.signalRService.addOnStartTypingListener((roomId, username) => {
       const idx = this.typingUsernames.findIndex(u => u === username);
-      if (idx == -1) {
+      if (idx == -1 && this.selectedRoom && this.selectedRoom.id === roomId) {
         this.typingUsernames.push(username);
         this.typingSubject.next(this.typingUsernames);
       }
@@ -59,7 +107,7 @@ export class ChatHomeComponent implements OnInit {
 
     this.signalRService.addOnStopTypingListener((roomId, username) => {
       const idx = this.typingUsernames.findIndex(u => u === username);
-      if (idx > -1) {
+      if (idx > -1 && this.selectedRoom.id === roomId) {
         this.typingUsernames.splice(idx, 1);
         this.typingSubject.next(this.typingUsernames);
       }
@@ -136,6 +184,11 @@ export class ChatHomeComponent implements OnInit {
         }, httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error loading messages'));
     }
     this.selectedRoom = room;
+    room.newMessages = false;
+    if (room.lastMessage)
+      this.messageService.setLastSeenByRoomIdForUserId(room.id, room.lastMessage.id)
+        .subscribe(() => {},
+        httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error loading messages'));
   }
 
   sendMessage() {
@@ -143,6 +196,9 @@ export class ChatHomeComponent implements OnInit {
       .subscribe(message => {
         this.selectedRoom.messages.unshift(message);
         this.selectedRoom.lastMessage = message;
+        this.messageService.setLastSeenByRoomIdForUserId(this.selectedRoom.id, message.id)
+              .subscribe(() => {},
+              httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error loading messages'));
       }, httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error sending message'));
     this.message = null;
     this.signalRService.notifyStopTyping(this.selectedRoom.id, this.userService.currentUserValue.username);
@@ -175,6 +231,13 @@ export class ChatHomeComponent implements OnInit {
 
   utcToLocal(date) {
     return new Date(new Date(date).getTime() - (new Date()).getTimezoneOffset()*60*1000);
+  }
+
+  playNotification(){
+    let audio = new Audio();
+    audio.src = "../../../assets/notification.mp3";
+    audio.load();
+    audio.play();
   }
 
   openModal(content) {

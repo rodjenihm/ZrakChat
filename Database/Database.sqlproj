@@ -94,6 +94,7 @@
     <Build Include="dbo\Stored Procedures\uspCreateGroupRoom.sql" />
     <Build Include="dbo\Stored Procedures\uspInactivateUserRoom.sql" />
     <Build Include="dbo\Stored Procedures\uspUpdateUserLastSeen.sql" />
+    <Build Include="dbo\Stored Procedures\uspSetLastSeenMessageByRoomIdForUserId.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Database.publish.xml" />

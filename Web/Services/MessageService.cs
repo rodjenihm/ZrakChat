@@ -17,7 +17,7 @@ namespace Web.Services
             this.connectionString = connectionString;
         }
 
-        public async Task<IEnumerable<MessageInfo>> GetMessagesByRoomIdAsync(int userId, int roomId)
+        public async Task<IEnumerable<MessageInfo>> GetByRoomIdForUserIdAsync(int userId, int roomId)
         {
             using var connection = new SqlConnection(connectionString.Value);
             var messages = await connection.QueryAsync<MessageInfo>
@@ -25,13 +25,22 @@ namespace Web.Services
             return messages;
         }
 
-        public async Task<Message> SendMessage(Message message)
+        public async Task<Message> SendMessageAsync(Message message)
         {
             using var connection = new SqlConnection(connectionString.Value);
             var messageInfo = (await connection.QueryAsync<Message>
                 ("uspSendMessage @UserId, @RoomId, @Text, @Created", message))
                 .FirstOrDefault();
             return messageInfo;
+        }
+
+        public async Task<bool> SetLastSeenMessageByRoomIdAsync(int userId, int roomId, int messageId)
+        {
+            using var connection = new SqlConnection(connectionString.Value);
+            await connection.ExecuteAsync
+                ("uspSetLastSeenMessageByRoomIdForUserId @UserId, @RoomId, @MessageId",
+                new { UserId = userId, RoomId = roomId, MessageId = messageId });
+            return true;
         }
     }
 }

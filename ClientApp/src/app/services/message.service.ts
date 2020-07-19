@@ -22,4 +22,10 @@ export class MessageService {
   send(roomId, text) {
     return this.http.post<Message>(`${environment.apiUrl}/messages/send`, { userId: this.userService.currentUserValue.id, roomId: roomId, text: text }, { observe: 'body' });
   }
+
+  setLastSeenByRoomIdForUserId(roomId, messageId) {
+    return this.http.post(`${environment.apiUrl}/messages/setLastSeenByRoomIdForUserId`,
+     { userId: this.userService.currentUserValue.id, roomId: roomId, messageId: messageId },
+     { observe: 'response' });
+  }
 }

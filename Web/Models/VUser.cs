@@ -10,5 +10,6 @@ namespace Web.Models
         public string DisplayName { get; set; }
         public bool IsConnected { get; set; }
         public DateTime LastSeen { get; set; }
+        public int LastMessageSeenId { get; set; }
     }
 }

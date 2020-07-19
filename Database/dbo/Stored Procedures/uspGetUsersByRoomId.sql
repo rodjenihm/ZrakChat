@@ -5,7 +5,7 @@ BEGIN
 	SET NOCOUNT ON
 
 	SELECT
-	u.[Id], u.[Username], u.[DisplayName], u.[LastSeen],
+	u.[Id], u.[Username], u.[DisplayName], u.[LastSeen], ur.[LastMessageSeenId],
 	(
 		SELECT CASE WHEN uc.[ConnectionId] IS NOT NULL
 			THEN CAST(1 AS BIT)

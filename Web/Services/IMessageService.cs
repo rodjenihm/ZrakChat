@@ -6,7 +6,8 @@ namespace Web.Services
 {
     public interface IMessageService
     {
-        Task<Message> SendMessage(Message message);
-        Task<IEnumerable<MessageInfo>> GetMessagesByRoomIdAsync(int userId, int roomId);
+        Task<Message> SendMessageAsync(Message message);
+        Task<IEnumerable<MessageInfo>> GetByRoomIdForUserIdAsync(int userId, int roomId);
+        Task<bool> SetLastSeenMessageByRoomIdAsync(int userId, int roomId, int messageId);
     }
 }

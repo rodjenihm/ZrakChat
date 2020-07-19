@@ -8,4 +8,5 @@ export interface UserRoom {
   lastMessage: Message;
   messages: Message[];
   members: VUser[];
+  newMessages?: boolean;
 }

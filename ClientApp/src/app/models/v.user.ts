@@ -5,5 +5,6 @@ export interface VUser {
     displayName: string;
     isConnected: boolean;
     lastSeen?: Date;
+    lastMessageSeenId?: string;
   }
   

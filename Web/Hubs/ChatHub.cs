@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Web.Models;
 using Web.Services;
 
 namespace Web.Hubs

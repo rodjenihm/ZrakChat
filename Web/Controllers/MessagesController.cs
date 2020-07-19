@@ -27,6 +27,29 @@ namespace Web.Controllers
             this.context = context;
         }
 
+        [HttpPost("setLastSeenByRoomIdForUserId")]
+        public async Task<IActionResult> SetLastSeenByRoomIdForUserId(MessageSetSeenDto model)
+        {
+            try
+            {
+                var claimId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id").Value);
+                if (model.UserId != claimId)
+                    return StatusCode(StatusCodes.Status401Unauthorized);
+
+                await messageService.SetLastSeenMessageByRoomIdAsync(model.UserId, model.RoomId, model.MessageId);
+                return Ok();
+            }
+            catch (SqlException e)
+            {
+                return BadRequest(new { message = e.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+
+        }
+
         [HttpGet("getByRoomIdForUserId")]
         public async Task<IActionResult> GetByRoomIdForUserId(int? userId, int? roomId)
         {
@@ -41,7 +64,7 @@ namespace Web.Controllers
                 if (userId != claimId)
                     return StatusCode(StatusCodes.Status401Unauthorized);
 
-                var messages = await messageService.GetMessagesByRoomIdAsync(userId.Value, roomId.Value);
+                var messages = await messageService.GetByRoomIdForUserIdAsync(userId.Value, roomId.Value);
                 return Ok(messages);
             }
             catch (SqlException e)
@@ -65,7 +88,7 @@ namespace Web.Controllers
 
                 var message = new Message { UserId = model.UserId, RoomId = model.RoomId, Text = model.Text };
 
-                message = await messageService.SendMessage(message);
+                message = await messageService.SendMessageAsync(message);
 
                 var messageInfo = new MessageInfo
                 {

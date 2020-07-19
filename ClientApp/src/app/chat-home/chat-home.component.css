@@ -15,6 +15,10 @@
   cursor: pointer;
 }
 
+.room-new-message {
+  background: rgba(80, 80, 32, 0.6);
+}
+
 .room-selected {
   background: rgba(64, 64, 64, 0.9);
 }
