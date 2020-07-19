@@ -48,7 +48,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         r.members.forEach(m => {
           if (m.id === userId) {
             m.isConnected = false;
-            m.lastSeen = new Date(Date.now())
+            m.lastSeen = new Date(new Date().getTime() + (new Date()).getTimezoneOffset()*60*1000);
           }
         })
       })

@@ -38,7 +38,7 @@
             <i class="fa fa-circle text-success" aria-hidden="true" *ngIf="member.isConnected" title="User is online"></i>
           </p>
           <p class="mt-2 text-muted" *ngIf="!isGroup() && !getOtherMembers(selectedRoom)[0].isConnected">
-            Last active {{ getOtherMembers(selectedRoom)[0].lastSeen | timeago }}
+            Last active {{ utcToLocal(getOtherMembers(selectedRoom)[0].lastSeen) | timeago }}
           </p>
         </div>
       </div>
