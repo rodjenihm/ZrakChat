@@ -83,4 +83,10 @@ export class SignalRService {
       func(roomId, username);
     });
   }
+
+  public addOnUpdateLastSeenMessageId = (func) => {
+    this.hubConnection.on('updateLastSeenMessageId', (roomId, userId, messageId) => {
+      func(roomId, userId, messageId);
+    });
+  }
 }

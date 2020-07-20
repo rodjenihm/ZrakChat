@@ -31,7 +31,7 @@ export class AppComponent implements OnDestroy {
   }
 
   public logout() {
-    this.userService.deauthenticate();
     this.signalRService.stop();
+    this.userService.deauthenticate();
   }
 }

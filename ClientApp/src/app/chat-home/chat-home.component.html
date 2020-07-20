@@ -13,7 +13,7 @@
     <div class="text-center">
       <ng-spinner class="mt-3" size="5" type="border" color="" *ngIf="!roomService.dataLoaded"></ng-spinner>
     </div>
-    <div class="room" [class.room-selected]="room === selectedRoom" [class.room-new-message]="room.newMessages" *ngFor="let room of getTableData()" (click)="openRoom(room)">
+    <div class="room" [class.room-selected]="room === selectedRoom" [class.room-new-message]="hasNewMessages(room)" *ngFor="let room of getTableData()" (click)="openRoom(room)">
       <div style="display: flex; justify-content: space-between;">
         <p class="text-success">{{ room.displayName }}</p> 
         <i class="fa fa-circle text-success" aria-hidden="true" *ngIf="isOnline(room)" title="User is online"></i>
@@ -37,25 +37,26 @@
             {{ member.username }} 
             <i class="fa fa-circle text-success" aria-hidden="true" *ngIf="member.isConnected" title="User is online"></i>
           </p>
-          <p class="mt-2 text-muted" *ngIf="!isGroup() && !getOtherMembers(selectedRoom)[0].isConnected">
-            Last active {{ utcToLocal(getOtherMembers(selectedRoom)[0].lastSeen) | timeago }}
+          <p class="mt-2 text-muted" *ngIf="!isGroup(selectedRoom) && !getOtherGuy(selectedRoom).isConnected">
+            Last active {{ utcToLocal(getOtherGuy(selectedRoom).lastSeen) | timeago }}
           </p>
         </div>
       </div>
       <p class="text-muted text-center font-italic" *ngIf="selectedRoom.messages.length === 0; else showMessages">This conversation is empty</p>
       <ng-template #showMessages>
         <div *ngFor="let typingUser of typing | async">{{ typingUser }} is typing...</div>
-        <div class="message" [class.message-self]="message.username === userService.currentUserValue.username" *ngFor="let message of selectedRoom.messages" @fadeIn>
+        <div class="message" [class.message-self]="isSelf(message)" *ngFor="let message of selectedRoom.messages" @fadeIn>
           <p class="font-italic">{{ message.username }}</p>
           <p class="text-justify">{{ message.text }}</p>
           <p class="text-muted">{{ utcToLocal(message.sent) | timeago }}</p>
+          <p class="text-sm font-italic text-info" style="font-size: 12px;" *ngIf="isSelf(message) && hasBeenSeen(selectedRoom, message)"> {{ getSeenInfoForMessage(selectedRoom, message) }}</p>
         </div>
       </ng-template>
     </div>
     <form class="input-group mt-auto" style="position: sticky; bottom: 0;" *ngIf="selectedRoom">
-      <input name="Text" class="form-control type_msg" autocomplete="off" [(ngModel)]="message" (ngModelChange)="notifyTyping($event)" />
+      <input name="Text" class="form-control type_msg" autocomplete="off" [(ngModel)]="messageText" (ngModelChange)="notifyTyping()" />
       <div class="input-group-append">
-        <input type="submit" value="Send" class="input-group-text btn send_btn" [disabled]="!message" (click)="sendMessage()" />
+        <input type="submit" value="Send" class="input-group-text btn send_btn" [disabled]="!messageText" (click)="sendMessage(selectedRoom)" />
       </div>
     </form>
   </div>

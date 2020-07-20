@@ -11,6 +11,7 @@ import { UserRoom } from '../models/user.room';
 import { MessageService } from '../services/message.service';
 import { SignalRService } from '../services/signal-r.service';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { Message } from '../models/message';
 
 @Component({
   selector: 'app-chat-home',
@@ -29,7 +30,7 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
   user: User;
   searchTerm = '';
   selectedRoom: UserRoom = null;
-  message;
+  messageText;
   isLoading = false;
 
   private typingUsernames: string[] = [];
@@ -73,7 +74,7 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
       })
     });
   
-    this.signalRService.addOnSendMessageListener((message) => {
+    this.signalRService.addOnSendMessageListener((message: Message) => {
       const idx = this.roomService.rooms.findIndex(r => r.id === message.roomId);
       if (idx === -1)  {
         this.roomService.refreshRooms();
@@ -86,14 +87,17 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
             if (idj === -1) {
               this.roomService.rooms[idx].messages.unshift(message);
               this.playNotification();
+              if (this.selectedRoom && (this.selectedRoom.id === message.roomId)) {
+                this.messageService.setLastSeenByRoomIdForUserId(this.selectedRoom.id, message.id)
+                  .subscribe(() => { },
+                  httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error setting info about last seen message'));
+              }
             }
           }
-          if (this.selectedRoom && (this.selectedRoom.id === message.roomId)) 
-            this.messageService.setLastSeenByRoomIdForUserId(this.selectedRoom.id, message.id)
-              .subscribe(() => {},
-              httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error loading messages'));
-          else 
-            this.roomService.rooms[idx].newMessages = true;
+          // if (this.selectedRoom && (this.selectedRoom.id === message.roomId)) 
+          //   this.messageService.setLastSeenByRoomIdForUserId(this.selectedRoom.id, message.id)
+          //     .subscribe(() => {},
+          //     httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error setting info about last seen message'));
       }
     });
 
@@ -103,7 +107,7 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
         this.typingUsernames.push(username);
         this.typingSubject.next(this.typingUsernames);
       }
-    })
+    });
 
     this.signalRService.addOnStopTypingListener((roomId, username) => {
       const idx = this.typingUsernames.findIndex(u => u === username);
@@ -111,7 +115,19 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
         this.typingUsernames.splice(idx, 1);
         this.typingSubject.next(this.typingUsernames);
       }
-    })
+    });
+
+    this.signalRService.addOnUpdateLastSeenMessageId((roomId, userId, messageId) => {
+      this.roomService.rooms.forEach(r => {
+        if (r.id === roomId) {
+          r.members.forEach(m => {
+            if (m.id === userId) {
+              m.lastMessageSeenId = messageId;
+            }
+          })
+        }
+      })
+    });
   }
 
   formatter = (user: User) => user.username;
@@ -184,27 +200,49 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
         }, httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error loading messages'));
     }
     this.selectedRoom = room;
-    room.newMessages = false;
-    if (room.lastMessage)
-      this.messageService.setLastSeenByRoomIdForUserId(room.id, room.lastMessage.id)
-        .subscribe(() => {},
-        httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error loading messages'));
+    if (room.lastMessage) {
+      var oldLastMessageSeenId = this.getMe(room).lastMessageSeenId;
+      var newLastMessageSeenId = room.lastMessage.id;
+      if (newLastMessageSeenId !== oldLastMessageSeenId) {
+        this.getMe(room).lastMessageSeenId = room.lastMessage.id;
+        this.messageService.setLastSeenByRoomIdForUserId(room.id, room.lastMessage.id)
+          .subscribe(() => { },
+          httpErrorResponse => {
+            this.getMe(room).lastMessageSeenId = oldLastMessageSeenId;
+            this.notificationService.showError(httpErrorResponse.error.message, 'Error setting info about last seen message')
+          });
+      }
+    }
   }
 
-  sendMessage() {
-    this.messageService.send(this.selectedRoom.id, this.message)
+  sendMessage(room: UserRoom) {
+    this.messageService.send(this.selectedRoom.id, this.messageText)
       .subscribe(message => {
         this.selectedRoom.messages.unshift(message);
         this.selectedRoom.lastMessage = message;
+        var oldLastMessageSeenId = this.getMe(room).lastMessageSeenId;
+        this.getMe(room).lastMessageSeenId = room.lastMessage.id;
         this.messageService.setLastSeenByRoomIdForUserId(this.selectedRoom.id, message.id)
-              .subscribe(() => {},
-              httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error loading messages'));
+              .subscribe(() => { },
+              httpErrorResponse => {
+                this.getMe(room).lastMessageSeenId = oldLastMessageSeenId;
+                this.notificationService.showError(httpErrorResponse.error.message, 'Error setting info about last seen message')
+              });
       }, httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error sending message'));
-    this.message = null;
+    this.messageText = null;
     this.signalRService.notifyStopTyping(this.selectedRoom.id, this.userService.currentUserValue.username);
   }
 
-  getOtherMembers(room) {
+  getMe(room: UserRoom) {
+    const idx = room.members.findIndex(m => m.username === this.userService.currentUserValue.username);
+    return room.members[idx];
+  }
+
+  getOtherGuy(room: UserRoom) {
+    return this.getOtherMembers(room)[0];
+  }
+
+  getOtherMembers(room: UserRoom) {
     return room.members.filter(u => u.id !== this.userService.currentUserValue.id);
   }
 
@@ -217,19 +255,48 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
     return false;
   }
 
-  isGroup() {
-    return this.selectedRoom.members.length > 2;
+  isGroup(room: UserRoom) {
+    return room.members.length > 2;
   }
 
-  notifyTyping(event) {
-    if (this.message) {
+  isSelf(message: Message) {
+    return message.username === this.userService.currentUserValue.username
+  }
+
+  hasNewMessages(room: UserRoom) {
+    if (!room.lastMessage)
+      return false;
+    return room.lastMessage.id > this.getMe(room).lastMessageSeenId;
+  }
+
+  hasBeenSeen(room: UserRoom, message: Message) {
+    let otherMembers = this.getOtherMembers(room);
+    for (let i = 0; i < otherMembers.length; i++) {
+      if (otherMembers[i].lastMessageSeenId >= message.id)
+        return true;
+    }
+    return false;
+  }
+
+  getSeenInfoForMessage(room: UserRoom, message: Message) {
+    let seen = 'Seen by';
+    let otherMembers = this.getOtherMembers(room);
+    for (let i = 0; i < otherMembers.length; i++) {
+      if (otherMembers[i].lastMessageSeenId >= message.id)
+        seen = `${seen} ${otherMembers[i].username},`;
+    }
+    return seen.slice(0, -1);
+  }
+
+  notifyTyping() {
+    if (this.messageText) {
       this.signalRService.notifyStartTyping(this.selectedRoom.id, this.userService.currentUserValue.username);
       return;
     }
     this.signalRService.notifyStopTyping(this.selectedRoom.id, this.userService.currentUserValue.username);
   }
 
-  utcToLocal(date) {
+  utcToLocal(date: Date) {
     return new Date(new Date(date).getTime() - (new Date()).getTimezoneOffset()*60*1000);
   }
 
@@ -240,7 +307,8 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
     audio.play();
   }
 
-  openModal(content) {
+  openModal(content: any) {
+    this.user = null;
     this.modalService.open(content, { ariaLabelledBy: 'modal-basic', scrollable: false, centered: true });
   }
 }

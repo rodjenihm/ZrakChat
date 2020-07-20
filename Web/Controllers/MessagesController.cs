@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Web.Dto;
@@ -18,11 +19,13 @@ namespace Web.Controllers
     [Authorize]
     public class MessagesController : ControllerBase
     {
+        private readonly IUserService userService;
         private readonly IMessageService messageService;
         private readonly IHubContext<ChatHub> context;
 
-        public MessagesController(IMessageService messageService, IHubContext<ChatHub> context)
+        public MessagesController(IUserService userService, IMessageService messageService, IHubContext<ChatHub> context)
         {
+            this.userService = userService;
             this.messageService = messageService;
             this.context = context;
         }
@@ -37,6 +40,15 @@ namespace Web.Controllers
                     return StatusCode(StatusCodes.Status401Unauthorized);
 
                 await messageService.SetLastSeenMessageByRoomIdAsync(model.UserId, model.RoomId, model.MessageId);
+
+                var sendTo = (await userService.GetUsersByRoomIdAsync(model.RoomId))
+                    .Where(u => u != User.Identity.Name)
+                    .ToList();
+
+                Debug.WriteLine(User.Identity.Name);
+
+                context.Clients.Users(sendTo).SendAsync("updateLastSeenMessageId", model.RoomId, model.UserId, model.MessageId);
+
                 return Ok();
             }
             catch (SqlException e)
@@ -78,7 +90,7 @@ namespace Web.Controllers
         }
 
         [HttpPost("send")]
-        public async Task<IActionResult> Send([FromServices] IUserService userService, MessageSendDto model)
+        public async Task<IActionResult> Send(MessageSendDto model)
         {
             try
             {
