@@ -54,80 +54,82 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
     this.typingSubject = new BehaviorSubject<string[]>(this.typingUsernames);
     this.typing = this.typingSubject.asObservable();
 
-    this.signalRService.addOnGoOnlineListener((userId) => {
-      this.roomService.rooms.forEach(r => {
-        r.members.forEach(m => {
-          if (m.id === userId)
-            m.isConnected = true;
+    if (!this.signalRService.onGoOnlineListener)
+      this.signalRService.addOnGoOnlineListener((userId) => {
+        this.roomService.rooms.forEach(r => {
+          r.members.forEach(m => {
+            if (m.id === userId)
+              m.isConnected = true;
+          })
         })
-      })
-    });
+      });
 
-    this.signalRService.addOnGoOfflineListener((userId) => {
-      this.roomService.rooms.forEach(r => {
-        r.members.forEach(m => {
-          if (m.id === userId) {
-            m.isConnected = false;
-            m.lastSeen = new Date(new Date().getTime() + (new Date()).getTimezoneOffset()*60*1000);
-          }
-        })
-      })
-    });
-  
-    this.signalRService.addOnSendMessageListener((message: Message) => {
-      const idx = this.roomService.rooms.findIndex(r => r.id === message.roomId);
-      if (idx === -1)  {
-        this.roomService.refreshRooms();
-	      this.playNotification();
-        return;
-      } else {
-	        this.roomService.rooms[idx].lastMessage = message;
-          if (this.roomService.rooms[idx].messages) {
-            const idj = this.roomService.rooms[idx].messages.findIndex(m => m.id == message.id);
-            if (idj === -1) {
-              this.roomService.rooms[idx].messages.unshift(message);
-              this.playNotification();
-              if (this.selectedRoom && (this.selectedRoom.id === message.roomId)) {
-                this.messageService.setLastSeenByRoomIdForUserId(this.selectedRoom.id, message.id)
-                  .subscribe(() => { },
-                  httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error setting info about last seen message'));
-              }
-            }
-          }
-          // if (this.selectedRoom && (this.selectedRoom.id === message.roomId)) 
-          //   this.messageService.setLastSeenByRoomIdForUserId(this.selectedRoom.id, message.id)
-          //     .subscribe(() => {},
-          //     httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error setting info about last seen message'));
-      }
-    });
-
-    this.signalRService.addOnStartTypingListener((roomId, username) => {
-      const idx = this.typingUsernames.findIndex(u => u === username);
-      if (idx == -1 && this.selectedRoom && this.selectedRoom.id === roomId) {
-        this.typingUsernames.push(username);
-        this.typingSubject.next(this.typingUsernames);
-      }
-    });
-
-    this.signalRService.addOnStopTypingListener((roomId, username) => {
-      const idx = this.typingUsernames.findIndex(u => u === username);
-      if (idx > -1 && this.selectedRoom.id === roomId) {
-        this.typingUsernames.splice(idx, 1);
-        this.typingSubject.next(this.typingUsernames);
-      }
-    });
-
-    this.signalRService.addOnUpdateLastSeenMessageId((roomId, userId, messageId) => {
-      this.roomService.rooms.forEach(r => {
-        if (r.id === roomId) {
+    if (!this.signalRService.onGoOfflineListener)
+      this.signalRService.addOnGoOfflineListener((userId) => {
+        this.roomService.rooms.forEach(r => {
           r.members.forEach(m => {
             if (m.id === userId) {
-              m.lastMessageSeenId = messageId;
+              m.isConnected = false;
+              m.lastSeen = new Date(new Date().getTime() + (new Date()).getTimezoneOffset()*60*1000);
             }
           })
+        })
+      });
+  
+    if (!this.signalRService.onSendMessageListener)
+      this.signalRService.addOnSendMessageListener((message: Message) => {
+        const idx = this.roomService.rooms.findIndex(r => r.id === message.roomId);
+        if (idx === -1)  {
+          this.roomService.refreshRooms();
+          this.playNotification();
+          return;
+        } else {
+            this.roomService.rooms[idx].lastMessage = message;
+            if (this.roomService.rooms[idx].messages) {
+              const idj = this.roomService.rooms[idx].messages.findIndex(m => m.id == message.id);
+              if (idj === -1) {
+                this.roomService.rooms[idx].messages.unshift(message);
+                this.playNotification();
+                if (this.selectedRoom && (this.selectedRoom.id === message.roomId)) {
+                  this.messageService.setLastSeenByRoomIdForUserId(this.selectedRoom.id, message.id)
+                    .subscribe(() => { },
+                    httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error setting info about last seen message'));
+                }
+              }
+            }
         }
-      })
-    });
+      });
+
+    if (!this.signalRService.onStartTypingListener)
+      this.signalRService.addOnStartTypingListener((roomId, username) => {
+        const idx = this.typingUsernames.findIndex(u => u === username);
+        if (idx == -1 && this.selectedRoom && this.selectedRoom.id === roomId) {
+          this.typingUsernames.push(username);
+          this.typingSubject.next(this.typingUsernames);
+        }
+      });
+
+    if (!this.signalRService.onStopTypingListener)
+      this.signalRService.addOnStopTypingListener((roomId, username) => {
+        const idx = this.typingUsernames.findIndex(u => u === username);
+        if (idx > -1 && this.selectedRoom.id === roomId) {
+          this.typingUsernames.splice(idx, 1);
+          this.typingSubject.next(this.typingUsernames);
+        }
+      });
+
+    if (!this.signalRService.onUpdateLastSeenMessageId)
+      this.signalRService.addOnUpdateLastSeenMessageId((roomId, userId, messageId) => {
+        this.roomService.rooms.forEach(r => {
+          if (r.id === roomId) {
+            r.members.forEach(m => {
+              if (m.id === userId) {
+                m.lastMessageSeenId = messageId;
+              }
+            })
+          }
+        })
+      });
   }
 
   formatter = (user: User) => user.username;

@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import * as signalR from "@aspnet/signalr";
+import * as signalR from "@microsoft/signalr";
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { UserService } from './user.service';
@@ -9,7 +9,13 @@ import { UserService } from './user.service';
 })
 export class SignalRService {
   private hubConnection: signalR.HubConnection;
-  a = 1;
+  
+  public onSendMessageListener = null;
+  public onGoOnlineListener = null;
+  public onGoOfflineListener = null;
+  public onStartTypingListener = null;
+  public onStopTypingListener = null;
+  public onUpdateLastSeenMessageId = null;
 
   constructor(
     private http: HttpClient,
@@ -55,36 +61,42 @@ export class SignalRService {
   }
 
   public addOnSendMessageListener = (func) => {
+    this.onSendMessageListener += func;
     this.hubConnection.on('updateMessages', (data) => {
       func(data);
     });
   }
 
   public addOnGoOnlineListener = (func) => {
+    this.onGoOnlineListener += func;
     this.hubConnection.on('userGoOnline', (data) => {
       func(data);
     });
   }
 
   public addOnGoOfflineListener = (func) => {
+    this.onGoOfflineListener += func;
     this.hubConnection.on('userGoOffline', (data) => {
       func(data);
     });
   }
 
   public addOnStartTypingListener = (func) => {
+    this.onStartTypingListener += func;
     this.hubConnection.on('userStartTyping', (roomId, username) => {
       func(roomId, username);
     });
   }
 
   public addOnStopTypingListener = (func) => {
+    this.onStopTypingListener += func;
     this.hubConnection.on('userStopTyping', (roomId, username) => {
       func(roomId, username);
     });
   }
 
   public addOnUpdateLastSeenMessageId = (func) => {
+    this.onUpdateLastSeenMessageId += func;
     this.hubConnection.on('updateLastSeenMessageId', (roomId, userId, messageId) => {
       func(roomId, userId, messageId);
     });
