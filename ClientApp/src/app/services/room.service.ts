@@ -24,7 +24,6 @@ export class RoomService {
   refreshRooms() {
     this.get()
       .subscribe(rooms => {
-        console.log(rooms);
         this.rooms = rooms;
         this.dataLoaded = true;
       }, httoErrorResponse => {
@@ -35,6 +34,20 @@ export class RoomService {
 
   createPrivate(objectId) {
     return this.http.post<UserRoom>(`${environment.apiUrl}/rooms/createPrivate`, { creatorId: this.userService.currentUserValue.id, objectId: objectId }, { observe: 'body' })
+      .pipe(
+        map(room => {
+          if (room) {
+            this.rooms.push(room);
+            return room;
+          }
+          return null;
+        })
+      );
+  }
+
+  createGroup(displayName, memberKeys) {
+    return this.http.post<UserRoom>(`${environment.apiUrl}/rooms/createGroup`,
+     { creatorId: this.userService.currentUserValue.id, displayName: displayName, memberKeys: memberKeys }, { observe: 'body' })
       .pipe(
         map(room => {
           if (room) {

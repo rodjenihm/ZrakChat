@@ -33,6 +33,9 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
   messageText;
   isLoading = false;
 
+  members: User[] = [];
+  groupName;
+
   private typingUsernames: string[] = [];
   private typingSubject: BehaviorSubject<string[]>;
   public typing: Observable<string[]>;
@@ -201,6 +204,37 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
       this.modalService.dismissAll();
   }
 
+  addMember(user: User) {
+    const idx = this.members.findIndex(m => m.id === user.id);
+    if (idx === -1)
+      this.members.push(user);
+    else
+      this.notificationService.showInfo('User is already added to the group', '');
+    this.user = null;
+  }
+
+  removeMember(user: User) {
+    const idx = this.members.findIndex(m => m.id === user.id);
+    this.members.splice(idx, 1);
+  }
+
+  addGroupChat() {
+    this.members.unshift(this.userService.currentUserValue);
+    const memberKeys = this.members.map(({ id }) => id);
+    this.roomService.createGroup(this.groupName, memberKeys)
+      .subscribe(room => {
+        if (room) {
+          this.notificationService.showSuccess('Chat successfully created.', '');
+          this.user = null;
+          this.members = null;
+          this.groupName = null;
+          room.messages = [];
+          this.selectedRoom = room;
+        }
+      }, httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error creating chat'));
+      this.modalService.dismissAll();
+  }
+
   openRoom(room: UserRoom) {
     if (!room.messages) {
       this.isLoading = true;
@@ -320,6 +354,8 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
 
   openModal(content: any) {
     this.user = null;
+    this.members = [ this.userService.currentUserValue ];
+    this.groupName = null;
     this.modalService.open(content, { ariaLabelledBy: 'modal-basic', scrollable: false, centered: true });
   }
 }
