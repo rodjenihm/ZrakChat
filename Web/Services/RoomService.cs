@@ -53,6 +53,21 @@ namespace Web.Services
             return userRoom;
         }
 
+        public async Task<UserRoom> GetActiveRoomByUserIdAndRoomIdAsync(int userId, int roomId)
+        {
+            using var connection = new SqlConnection(connectionString.Value);
+            var userRoom = (await connection.QueryAsync
+                ("uspGetActiveRoomByUserIdAndRoomId @UserId, @RoomId",
+                (Func<UserRoom, MessageInfo, UserRoom>)((ur, mi) =>
+                {
+                    ur.LastMessage = mi;
+                    return ur;
+                }),
+                new { UserId = userId, RoomId = roomId }, splitOn: "Sent"))
+                .FirstOrDefault();
+            return userRoom;
+        }
+
         public async Task<IEnumerable<UserRoom>> GetActiveRoomsByUserIdAsync(int userId)
         {
             using var connection = new SqlConnection(connectionString.Value);

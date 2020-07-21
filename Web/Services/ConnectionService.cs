@@ -7,13 +7,6 @@ using Web.Helpers;
 
 namespace Web.Services
 {
-    public interface IConnectionService
-    {
-        Task CreateConnectionAsync(int userId, string username, string connectionId);
-        Task DeleteConnectionAsync(int userId, string username, string connectionId);
-        Task<IEnumerable<string>> GetConnectionIdsByUserIdAsync(int userId);
-    }
-
     public class ConnectionService : IConnectionService
     {
         private readonly ConnectionString connectionString;

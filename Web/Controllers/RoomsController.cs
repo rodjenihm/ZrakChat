@@ -52,6 +52,35 @@ namespace Web.Controllers
             }
         }
 
+        [HttpGet("getActiveByUserIdAndRoomId")]
+        public async Task<IActionResult> GetByUserIdAndRoomId(int? userId, int? roomId)
+        {
+            if (!userId.HasValue)
+                return BadRequest(new { message = "UserId doesn't belong to an existing user." });
+            if (!roomId.HasValue)
+                return BadRequest(new { message = "RoomId doesn't belong to an existing room." });
+
+            try
+            {
+                var claimId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id").Value);
+                if (userId != claimId)
+                    return StatusCode(StatusCodes.Status401Unauthorized);
+
+                var userRoom = await roomService.GetActiveRoomByUserIdAndRoomIdAsync(userId.Value, roomId.Value);
+                userRoom.Members = await roomService.GetRoomMembersByRoomIdAsync(roomId.Value);
+
+                return Ok(userRoom);
+            }
+            catch (SqlException e)
+            {
+                return BadRequest(new { message = e.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
         [HttpPost("createPrivate")]
         public async Task<IActionResult> CreatePrivate(RoomCreatePrivateDto model)
         {
@@ -67,6 +96,7 @@ namespace Web.Controllers
                 if (userRoom == null)
                     userRoom = await roomService.CreatePrivateRoomForUsersAsync(model.CreatorId, model.ObjectId);
 
+                userRoom.Members = await roomService.GetRoomMembersByRoomIdAsync(userRoom.Id);
                 return Ok(userRoom);
             }
             catch (SqlException e)
@@ -92,7 +122,7 @@ namespace Web.Controllers
                     return StatusCode(StatusCodes.Status401Unauthorized);
 
                 var userRoom = await roomService.CreateGroupRoomForUserAsync(model.CreatorId, model.DisplayName, model.MemberKeys);
-
+                userRoom.Members = await roomService.GetRoomMembersByRoomIdAsync(userRoom.Id);
                 return Ok(userRoom);
             }
             catch (SqlException e)

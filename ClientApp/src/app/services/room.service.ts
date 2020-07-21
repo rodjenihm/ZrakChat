@@ -24,10 +24,8 @@ export class RoomService {
   refreshRooms() {
     this.get()
       .subscribe(rooms => {
+        console.log(rooms);
         this.rooms = rooms;
-        this.rooms.forEach(r => {
-          const idx = r.members.findIndex(m => m.username === this.userService.currentUserValue.username);
-        })
         this.dataLoaded = true;
       }, httoErrorResponse => {
         this.dataLoaded = true;
@@ -38,12 +36,12 @@ export class RoomService {
   createPrivate(objectId) {
     return this.http.post<UserRoom>(`${environment.apiUrl}/rooms/createPrivate`, { creatorId: this.userService.currentUserValue.id, objectId: objectId }, { observe: 'body' })
       .pipe(
-        map(body => {
-          if (body) {
-            this.refreshRooms();
-            return true;
+        map(room => {
+          if (room) {
+            this.rooms.push(room);
+            return room;
           }
-          return false;
+          return null;
         })
       );
   }
@@ -64,5 +62,10 @@ export class RoomService {
 
   get() {
     return this.http.get<UserRoom[]>(`${environment.apiUrl}/rooms/getActiveByUserId`, { observe: 'body', params: { "userId": this.userService.currentUserValue.id } });
+  }
+
+  getByRoomId(roomId) {
+    return this.http.get<UserRoom>(`${environment.apiUrl}/rooms/getActiveByUserIdAndRoomId`,
+     { observe: 'body', params: { "userId": this.userService.currentUserValue.id, "roomId": roomId } });
   }
 }

@@ -80,7 +80,14 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
       this.signalRService.addOnSendMessageListener((message: Message) => {
         const idx = this.roomService.rooms.findIndex(r => r.id === message.roomId);
         if (idx === -1)  {
-          this.roomService.refreshRooms();
+          this.roomService.getByRoomId(message.roomId)
+            .subscribe(room => {
+              room.lastMessage = message;
+              this.roomService.rooms.unshift(room);
+            }, httpErrorResponse => {
+              this.notificationService.showError(httpErrorResponse.error.message, 'Error loading room. Refreshing now');
+              this.roomService.refreshRooms();
+            });
           this.playNotification();
           return;
         } else {
@@ -183,10 +190,12 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
     }
 
     this.roomService.createPrivate(this.user.id)
-      .subscribe(result => {
-        if (result) {
+      .subscribe(room => {
+        if (room) {
           this.notificationService.showSuccess('Chat successfully created.', '');
           this.user = null;
+          room.messages = [];
+          this.selectedRoom = room;
         }
       }, httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error creating chat'));
       this.modalService.dismissAll();

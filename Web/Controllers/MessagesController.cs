@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Data.SqlClient;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Web.Dto;
@@ -44,8 +43,6 @@ namespace Web.Controllers
                 var sendTo = (await userService.GetUsersByRoomIdAsync(model.RoomId))
                     .Where(u => u != User.Identity.Name)
                     .ToList();
-
-                Debug.WriteLine(User.Identity.Name);
 
                 context.Clients.Users(sendTo).SendAsync("updateLastSeenMessageId", model.RoomId, model.UserId, model.MessageId);
 
