@@ -16,7 +16,6 @@ export class AppComponent implements OnDestroy {
   constructor(
     private userService: UserService,
     private signalRService: SignalRService) {
-    
   }
   ngOnDestroy(): void {
     this.signalRService.stop();

@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RoomService } from '../services/room.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { User } from '../models/user';
@@ -39,7 +39,7 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
   private typingUsernames: string[] = [];
   private typingSubject: BehaviorSubject<string[]>;
   public typing: Observable<string[]>;
-  
+
   constructor(
     public roomService: RoomService,
     public userService: UserService,
@@ -73,16 +73,16 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
           r.members.forEach(m => {
             if (m.id === userId) {
               m.isConnected = false;
-              m.lastSeen = new Date(new Date().getTime() + (new Date()).getTimezoneOffset()*60*1000);
+              m.lastSeen = new Date(new Date().getTime() + (new Date()).getTimezoneOffset() * 60 * 1000);
             }
           })
         })
       });
-  
+
     if (!this.signalRService.onSendMessageListener)
       this.signalRService.addOnSendMessageListener((message: Message) => {
         const idx = this.roomService.rooms.findIndex(r => r.id === message.roomId);
-        if (idx === -1)  {
+        if (idx === -1) {
           this.roomService.getByRoomId(message.roomId)
             .subscribe(room => {
               room.lastMessage = message;
@@ -94,19 +94,19 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
           this.playNotification();
           return;
         } else {
-            this.roomService.rooms[idx].lastMessage = message;
-            if (this.roomService.rooms[idx].messages) {
-              const idj = this.roomService.rooms[idx].messages.findIndex(m => m.id == message.id);
-              if (idj === -1) {
-                this.roomService.rooms[idx].messages.unshift(message);
-                this.playNotification();
-                if (this.selectedRoom && (this.selectedRoom.id === message.roomId)) {
-                  this.messageService.setLastSeenByRoomIdForUserId(this.selectedRoom.id, message.id)
-                    .subscribe(() => { },
+          this.roomService.rooms[idx].lastMessage = message;
+          if (this.roomService.rooms[idx].messages) {
+            const idj = this.roomService.rooms[idx].messages.findIndex(m => m.id == message.id);
+            if (idj === -1) {
+              this.roomService.rooms[idx].messages.unshift(message);
+              this.playNotification();
+              if (this.selectedRoom && (this.selectedRoom.id === message.roomId)) {
+                this.messageService.setLastSeenByRoomIdForUserId(this.selectedRoom.id, message.id)
+                  .subscribe(() => { },
                     httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error setting info about last seen message'));
-                }
               }
             }
+          }
         }
       });
 
@@ -157,21 +157,21 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
         )
       }),
       map(userSearch => userSearch
-        .filter(u => u.id !== this.userService.currentUserValue.id))        
+        .filter(u => u.id !== this.userService.currentUserValue.id))
     )
-    
+
   getTableData() {
-    var tableData = this.roomService.rooms.sort((r1, r2)=> {
+    var tableData = this.roomService.rooms.sort((r1, r2) => {
       if (!r1.lastMessage && !r2.lastMessage)
         return 0;
-      
+
       if (!r1.lastMessage)
         return 1;
 
       if (!r2.lastMessage)
         return -1;
-      
-      return new Date(r2.lastMessage.sent).getTime() - new  Date(r1.lastMessage.sent).getTime();
+
+      return new Date(r2.lastMessage.sent).getTime() - new Date(r1.lastMessage.sent).getTime();
     });
 
     if (!tableData)
@@ -180,8 +180,8 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
     if (!this.searchTerm)
       return tableData;
 
-      return tableData
-        .filter(userRoom => userRoom.displayName.toLowerCase().startsWith(this.searchTerm.toLowerCase()));
+    return tableData
+      .filter(userRoom => userRoom.displayName.toLowerCase().startsWith(this.searchTerm.toLowerCase()));
   }
 
   addPrivateChat() {
@@ -201,7 +201,7 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
           this.selectedRoom = room;
         }
       }, httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error creating chat'));
-      this.modalService.dismissAll();
+    this.modalService.dismissAll();
   }
 
   addMember(user: User) {
@@ -231,7 +231,7 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
           this.selectedRoom = room;
         }
       }, httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error creating chat'));
-      this.modalService.dismissAll();
+    this.modalService.dismissAll();
   }
 
   openRoom(room: UserRoom) {
@@ -251,10 +251,10 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
         this.getMe(room).lastMessageSeenId = room.lastMessage.id;
         this.messageService.setLastSeenByRoomIdForUserId(room.id, room.lastMessage.id)
           .subscribe(() => { },
-          httpErrorResponse => {
-            this.getMe(room).lastMessageSeenId = oldLastMessageSeenId;
-            this.notificationService.showError(httpErrorResponse.error.message, 'Error setting info about last seen message')
-          });
+            httpErrorResponse => {
+              this.getMe(room).lastMessageSeenId = oldLastMessageSeenId;
+              this.notificationService.showError(httpErrorResponse.error.message, 'Error setting info about last seen message')
+            });
       }
     }
   }
@@ -267,11 +267,11 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
         var oldLastMessageSeenId = this.getMe(room).lastMessageSeenId;
         this.getMe(room).lastMessageSeenId = room.lastMessage.id;
         this.messageService.setLastSeenByRoomIdForUserId(this.selectedRoom.id, message.id)
-              .subscribe(() => { },
-              httpErrorResponse => {
-                this.getMe(room).lastMessageSeenId = oldLastMessageSeenId;
-                this.notificationService.showError(httpErrorResponse.error.message, 'Error setting info about last seen message')
-              });
+          .subscribe(() => { },
+            httpErrorResponse => {
+              this.getMe(room).lastMessageSeenId = oldLastMessageSeenId;
+              this.notificationService.showError(httpErrorResponse.error.message, 'Error setting info about last seen message')
+            });
       }, httpErrorResponse => this.notificationService.showError(httpErrorResponse.error.message, 'Error sending message'));
     this.messageText = null;
     this.signalRService.notifyStopTyping(this.selectedRoom.id, this.userService.currentUserValue.username);
@@ -295,7 +295,7 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
     for (let i = 0; i < otherMembers.length; i++) {
       if (otherMembers[i].isConnected)
         return true;
-    }  
+    }
     return false;
   }
 
@@ -341,10 +341,10 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
   }
 
   utcToLocal(date: Date) {
-    return new Date(new Date(date).getTime() - (new Date()).getTimezoneOffset()*60*1000);
+    return new Date(new Date(date).getTime() - (new Date()).getTimezoneOffset() * 60 * 1000);
   }
 
-  playNotification(){
+  playNotification() {
     let audio = new Audio();
     audio.src = "../../../assets/notification.mp3";
     audio.load();
@@ -353,7 +353,7 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
 
   openModal(content: any) {
     this.user = null;
-    this.members = [ this.userService.currentUserValue ];
+    this.members = [this.userService.currentUserValue];
     this.groupName = null;
     this.modalService.open(content, { ariaLabelledBy: 'modal-basic', scrollable: false, centered: true });
   }
