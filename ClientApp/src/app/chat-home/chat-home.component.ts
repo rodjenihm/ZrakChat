@@ -219,7 +219,6 @@ export class ChatHomeComponent implements OnInit, OnDestroy {
   }
 
   addGroupChat() {
-    this.members.unshift(this.userService.currentUserValue);
     const memberKeys = this.members.map(({ id }) => id);
     this.roomService.createGroup(this.groupName, memberKeys)
       .subscribe(room => {

@@ -59,20 +59,6 @@ export class RoomService {
       );
   }
 
-  //delete(contactId) {
-  //  return this.http.post(`${environment.apiUrl}/contacts/delete`, { userId: this.userService.currentUserValue.id, contactId: contactId }, { observe: 'response' })
-  //    .pipe(
-  //      map(response => {
-  //        if (response.status == 200) {
-  //          const idx = this.rooms.findIndex(c => c.id === contactId);
-  //          this.rooms.splice(idx, 1);
-  //          return true;
-  //        }
-  //        return false;
-  //      })
-  //    );
-  //}
-
   get() {
     return this.http.get<UserRoom[]>(`${environment.apiUrl}/rooms/getActiveByUserId`, { observe: 'body', params: { "userId": this.userService.currentUserValue.id } });
   }
